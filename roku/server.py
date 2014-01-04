@@ -6,7 +6,7 @@ app = Flask(__name__)
 def keypress(key):
     pass
 
-@app.route('/launch/<code>'):
+@app.route('/launch/<code>')
 def launch(code):
     app_id = request.args.get('contentID', None)
     pass
