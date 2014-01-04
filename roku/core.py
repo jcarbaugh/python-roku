@@ -1,10 +1,11 @@
-#!/Users/Jeremy/.virtualenvs/sandbox/bin/python
-from lxml import etree
-import httplib
 import logging
-import socket
+import requests
+from lxml import etree
+from urlparse import urlparse
 
-__version__ = '0.1.0'
+from roku import discovery
+
+__version__ = '1.0.0'
 
 roku_logger = logging.getLogger('roku')
 
@@ -27,76 +28,132 @@ COMMANDS = {
     'literal': 'Lit',
 }
 
+SENSORS = ('acceleration', 'magnetic', 'orientation', 'rotation')
+
+TOUCH_OPS = ('up', 'down', 'press', 'move', 'cancel')
+
+
 class RokuException(Exception):
     pass
 
 class Application(object):
 
-    def __init__(self, id, version, name):
-        self.id = id
+    def __init__(self, id, version, name, roku=None):
+        self.id = int(id)
         self.version = version
         self.name = name
+        self.roku = roku
 
-    def __str__(self):
-        return "[%s] %s v%s" % (self.id, self.name, self.version)
+    def __repr__(self):
+        return '<Application: [%s] %s v%s>' % (self.id, self.name, self.version)
+
+    @property
+    def icon(self):
+        if self.roku:
+            self.roku.icon(self)
+
+    def launch(self):
+        if self.roku:
+            self.roku.launch(self)
+
+    def store(self):
+        if self.roku:
+            self.roku.store(self)
 
 class Roku(object):
+
+    @classmethod
+    def discover(self):
+        rokus = []
+        for device in discovery.discover():
+            o = urlparse(device.location)
+            rokus.append(Roku(o.hostname, o.port))
+        return rokus
 
     def __init__(self, host, port=8060):
         self.host = host
         self.port = port
-        self.conn = None
-        self._connect()
+        self._conn = None
+
+    def __repr__(self):
+        return "<Roku: %s:%s>" % (self.host, self.port)
 
     def __getattr__(self, name):
 
-        if name not in COMMANDS:
+        if name not in COMMANDS and name not in SENSORS:
             raise AttributeError('%s is not a valid method' % name)
 
         def command(*args):
-            if name == 'literal':
+            if name in SENSORS:
+                keys = ['%s.%s' % (name, axis) for axis in ('x', 'y', 'z')]
+                params = dict(zip(keys, args))
+                self.input(params)
+            elif name == 'literal':
                 for char in args[0]:
                     path = '/keypress/%s_%s' % (COMMANDS[name], char.upper())
-                    self._send(path)
+                    self._post(path)
             else:
                 path = '/keypress/%s' % COMMANDS[name]
-                self._send(path)
+                self._post(path)
 
         return command
 
-    def _connect(self):
-        if self.conn is not None and hasattr(self.conn, 'close'):
-            self.conn.close()
-            self.conn = None
-        self.conn = httplib.HTTPConnection('%s:%s' % (self.host, self.port))
+    def __getitem__(self, key):
+        if isinstance(key, int):
+            return self._app_for_id(key)
+        else:
+            return self._app_for_name(key)
 
-    def _send(self, path):
+    def _app_for_name(self, name):
+        for app in self.apps:
+            if app.name == name:
+                return app
+
+    def _app_for_id(self, app_id):
+        for app in self.apps:
+            if app.id == app_id:
+                return app
+
+    def _connect(self):
+        if self._conn is None:
+            self._conn = requests.Session()
+
+    def _get(self, path, *args, **kwargs):
+        return self._call('GET', path, *args, **kwargs)
+
+    def _post(self, path, *args, **kwargs):
+        return self._call('POST', path, *args, **kwargs)
+
+    def _call(self, method, path, *args, **kwargs):
+
+        self._connect()
 
         roku_logger.debug(path)
 
-        try:
+        url = 'http://%s:%s%s' % (self.host, self.port, path)
 
-            self.conn.request('POST', path)
-            resp = self.conn.getresponse()
-            content = resp.read()
+        if method not in ('GET', 'POST'):
+            raise ValueError('only GET and POST HTTP methods are supported')
 
-            if resp.status != 200:
-                raise RokuException(content)
+        func = getattr(self._conn, method.lower())
+        resp = func(url, *args, **kwargs)
 
-        except socket.error, se:
-            raise RokuException(se.strerror)
+        if resp.status_code != 200:
+            raise RokuException(resp.content)
 
-        return content
+        return resp.content
 
+    @property
     def apps(self):
         applications = []
-        resp = self._send('/query/apps')
+        resp = self._get('/query/apps')
         root = etree.fromstring(resp)
         for app_node in root:
             app = Application(
                 id=app_node.attrib['id'],
                 version=app_node.attrib['version'],
                 name=app_node.text,
+                roku=self,
             )
             applications.append(app)
         return applications
@@ -104,35 +161,24 @@ class Roku(object):
     def commands(self):
         return sorted(COMMANDS.keys())
 
-    def get_app(self, name):
-        for app in self.apps():
-            if app.name == name:
-                return app
-
-    def get_icon(self, app):
-        return self._send('/query/icon/%s' % app.id)
+    def icon(self, app):
+        return self._get('/query/icon/%s' % app.id)
 
     def launch(self, app):
-        return self._send('/launch/11?contentID=%s' % app.id)
+        if app.roku and app.roku != self:
+            raise RokuException('this app belongs to another Roku')
+        return self._post('/launch/%s' % app.id, params={'contentID': app.id})
 
-if __name__ == '__main__':
+    def store(self, app):
+        return self._post('/launch/11', params={'contentID': app.id})
 
-    logging.basicConfig(level=logging.DEBUG)
+    def input(self, params):
+        return self._post('/input', params=params)
 
-    r = Roku('localhost')
-
-    print r.commands()
-
-    r.home()
-    r.literal('aweglksjgl')
-    r.up()
-
-    apps = r.apps()
-    for app in apps:
-        print "\t%s" % app
-
-    app = r.get_app('Hulu Plus')
-    print app
-
-    r.get_icon(app)
-    r.launch(app)
+    def touch(self, x, y, op='down'):
+        params = {
+            'touch.0.x': x,
+            'touch.0.y': y,
+            'touch.0.op': op,
+        }
+        self.input(params)
