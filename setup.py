@@ -1,4 +1,3 @@
-from roku import __version__
 from setuptools import setup, find_packages
 import os
 
@@ -8,13 +7,17 @@ f.close()
 
 setup(
     name='roku',
-    version=__version__,
+    version='1.0',
     description='Client for the Roku media player',
     long_description=readme,
     author='Jeremy Carbaugh',
     author_email='jcarbaugh@gmail.com',
-    url='http://github.com/jcarbaugh/python-roku/',
+    url='https://github.com/jcarbaugh/python-roku',
     packages=find_packages(),
+    install_requires=[
+        'lxml == 3.2.5',
+        'requests==2.1.0',
+    ],
     license='BSD License',
     platforms=["any"],
     classifiers=[
