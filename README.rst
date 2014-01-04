@@ -38,13 +38,13 @@ To see a full list of available commands, use the *commands* property.
     >>> roku.commands
     ['back', 'backspace', 'down', 'enter', 'forward', 'home', 'info', 'left', 'literal', 'play', 'replay', 'reverse', 'right', 'search', 'select', 'up']
 
-If you are following along on your home network and are connected to you Roku, you should see it doing stuff. *Cool!*
+If you are following along on your home network and are connected to your Roku, you should see it doing stuff. *Cool!*
 
 
 Apps
 ~~~~
 
-The *apps* property will return a list of all the applications on your device.
+The *apps* property will return a list of the applications on your device.
 ::
 
     >>> roku.apps
@@ -65,7 +65,7 @@ You can get an individual app from the Roku object by either its *name* or *id*.
     >>> roku[2285]
     <Application: [2285] Hulu Plus v2.7.6>
 
-Seeing the reference to this Hulu Plus app makes me really want to see the latest episode of Nashville. Let's launch it!
+Seeing the reference to this Hulu Plus app makes me really want to watch the latest episode of Nashville. Let's launch it!
 ::
 
     >>> hulu = roku['Hulu Plus']
@@ -171,6 +171,7 @@ TODO
 ----
 
 * Tests, of course.
+* Multitouch support.
 * A Flask proxy server that can listen to requests and forward them to devices on the local network. Control multiple devices at once, eh?
 * A server that mimics the Roku interface so you can make your own Roku-like stuff.
 * A task runner that will take a set of commands and run them with delays that are appropriate for most devices.
