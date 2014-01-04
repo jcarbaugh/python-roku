@@ -173,3 +173,4 @@ TODO
 * Tests, of course.
 * A Flask proxy server that can listen to requests and forward them to devices on the local network. Control multiple devices at once, eh?
 * A server that mimics the Roku interface so you can make your own Roku-like stuff.
+* A task runner that will take a set of commands and run them with delays that are appropriate for most devices.
