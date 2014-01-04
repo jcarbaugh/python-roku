@@ -63,9 +63,9 @@ class Application(object):
 class Roku(object):
 
     @classmethod
-    def discover(self):
+    def discover(self, *args, **kwargs):
         rokus = []
-        for device in discovery.discover():
+        for device in discovery.discover(*args, **kwargs):
             o = urlparse(device.location)
             rokus.append(Roku(o.hostname, o.port))
         return rokus
@@ -158,6 +158,7 @@ class Roku(object):
             applications.append(app)
         return applications
 
+    @property
     def commands(self):
         return sorted(COMMANDS.keys())
 
@@ -176,9 +177,14 @@ class Roku(object):
         return self._post('/input', params=params)
 
     def touch(self, x, y, op='down'):
+
+        if op not in TOUCH_OPS:
+            raise RokuException('%s is not a valid touch operation' % op)
+
         params = {
             'touch.0.x': x,
             'touch.0.y': y,
             'touch.0.op': op,
         }
+
         self.input(params)
