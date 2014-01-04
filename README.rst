@@ -1,7 +1,7 @@
 python-roku
 ===========
 
-Screw remotes. Control your Roku via Python.
+Screw remotes. Control your `Roku <http://www.roku.com>`_ via Python.
 
 
 Installation
@@ -65,7 +65,7 @@ You can get an individual app from the Roku object by either its *name* or *id*.
     >>> roku[2285]
     <Application: [2285] Hulu Plus v2.7.6>
 
-Seeing the reference to this Hulu Plus app makes me really want to watch the latest episode of Nashville. Let's launch it!
+Seeing the reference to this Hulu Plus app makes me really want to watch the latest episode of `Nashville <http://abc.go.com/shows/nashville>`_. Let's launch it!
 ::
 
     >>> hulu = roku['Hulu Plus']
