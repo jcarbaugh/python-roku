@@ -9,17 +9,12 @@ f.close()
 setup(
     name='python-roku',
     version=__version__,
-    description='RESTful API for interacting with the Roku media player',
+    description='Client for the Roku media player',
     long_description=readme,
     author='Jeremy Carbaugh',
     author_email='jcarbaugh@gmail.com',
     url='http://github.com/jcarbaugh/python-roku/',
     packages=find_packages(),
-    # package_data={
-    #     'cloudmailin': [
-    #         'test/mail/*.txt',
-    #     ],
-    # },
     license='BSD License',
     platforms=["any"],
     classifiers=[
