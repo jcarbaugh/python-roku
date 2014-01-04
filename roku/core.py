@@ -50,7 +50,7 @@ class Application(object):
     @property
     def icon(self):
         if self.roku:
-            self.roku.icon(self)
+            return self.roku.icon(self)
 
     def launch(self):
         if self.roku:
