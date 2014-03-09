@@ -1,7 +1,9 @@
 import logging
 import requests
-from lxml import etree
-from urlparse import urlparse
+import xml.etree.ElementTree as ET
+#from lxml import etree
+
+from six.moves.urllib_parse import urlparse
 
 from roku import discovery
 
@@ -36,6 +38,7 @@ TOUCH_OPS = ('up', 'down', 'press', 'move', 'cancel')
 class RokuException(Exception):
     pass
 
+
 class Application(object):
 
     def __init__(self, id, version, name, roku=None):
@@ -45,7 +48,8 @@ class Application(object):
         self.roku = roku
 
     def __repr__(self):
-        return '<Application: [%s] %s v%s>' % (self.id, self.name, self.version)
+        return ('<Application: [%s] %s v%s>' %
+               (self.id, self.name, self.version))
 
     @property
     def icon(self):
@@ -59,6 +63,7 @@ class Application(object):
     def store(self):
         if self.roku:
             self.roku.store(self)
+
 
 class Roku(object):
 
@@ -147,7 +152,7 @@ class Roku(object):
     def apps(self):
         applications = []
         resp = self._get('/query/apps')
-        root = etree.fromstring(resp)
+        root = ET.fromstring(resp)
         for app_node in root:
             app = Application(
                 id=app_node.attrib['id'],
