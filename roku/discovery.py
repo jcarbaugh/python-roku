@@ -7,6 +7,9 @@ import socket
 import httplib
 import StringIO
 
+ST_DIAL = 'urn:dial-multiscreen-org:service:dial:1'
+ST_ECP = 'roku:ecp'
+
 
 class SSDPResponse(object):
 
@@ -26,7 +29,7 @@ class SSDPResponse(object):
         return '<SSDPResponse({location}, {st}, {usn})'.format(**self.__dict__)
 
 
-def discover(timeout=2, retries=1):
+def discover(timeout=2, retries=1, st=ST_ECP):
 
     group = ('239.255.255.250', 1900)
 
@@ -45,7 +48,7 @@ def discover(timeout=2, retries=1):
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
-        sock.sendto(message.format(st='roku:ecp'), group)
+        sock.sendto(message.format(st=st), group)
 
         while 1:
             try:
