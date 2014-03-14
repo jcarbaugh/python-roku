@@ -15,8 +15,8 @@ setup(
     url='https://github.com/jcarbaugh/python-roku',
     packages=find_packages(),
     install_requires=[
-        'lxml == 3.2.5',
-        'requests==2.1.0',
+        'requests>=2.1.0',
+        'six'
     ],
     license='BSD License',
     platforms=["any"],
