@@ -16,13 +16,15 @@ class TestRoku(Roku):
 
     def _call(self, method, path, *args, **kwargs):
 
-        self._calls.append((method, path, args, kwargs))
+        resp = None
 
         if path == '/query/apps':
             fmt = '<app id="%d" version="%s">%s</app>'
-            return '<apps>%s</apps>' % "".join(fmt % a for a in TEST_APPS)
+            resp = '<apps>%s</apps>' % "".join(fmt % a for a in TEST_APPS)
 
-        return None  # don't do anything otherwise
+        self._calls.append((method, path, args, kwargs, resp))
+
+        return resp
 
     def calls(self):
         return self._calls
