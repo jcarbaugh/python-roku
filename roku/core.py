@@ -42,7 +42,7 @@ class RokuException(Exception):
 class Application(object):
 
     def __init__(self, id, version, name, roku=None):
-        self.id = int(id)
+        self.id = str(id)
         self.version = version
         self.name = name
         self.roku = roku
