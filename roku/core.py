@@ -45,7 +45,7 @@ class Application(object):
     def __init__(self, id, version, name, roku=None):
         self.id = str(id)
         self.version = version
-        self.name = name
+        self.name = name.encode('ascii', 'ignore')
         self.roku = roku
 
     def __repr__(self):
