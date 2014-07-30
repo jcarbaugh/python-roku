@@ -4,6 +4,7 @@ import xml.etree.ElementTree as ET
 #from lxml import etree
 
 from six.moves.urllib_parse import urlparse
+from six.moves.urllib_parse import quote
 
 from roku import discovery
 
@@ -95,7 +96,8 @@ class Roku(object):
                 self.input(params)
             elif name == 'literal':
                 for char in args[0]:
-                    path = '/keypress/%s_%s' % (COMMANDS[name], char.upper())
+                    char = quote(char)
+                    path = '/keypress/%s_%s' % (COMMANDS[name], char)
                     self._post(path)
             else:
                 path = '/keypress/%s' % COMMANDS[name]
