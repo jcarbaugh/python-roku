@@ -1,6 +1,8 @@
 import logging
 import requests
 import xml.etree.ElementTree as ET
+import time
+
 #from lxml import etree
 
 from six.moves.urllib_parse import urlparse
@@ -68,6 +70,8 @@ class Application(object):
 
 class Roku(object):
 
+    DELAY = 0
+
     @classmethod
     def discover(self, *args, **kwargs):
         rokus = []
@@ -99,10 +103,16 @@ class Roku(object):
                     char = quote(char)
                     path = '/keypress/%s_%s' % (COMMANDS[name], char)
                     self._post(path)
+                    
+                    if self.DELAY > 0:
+                        time.sleep(self.DELAY)
             else:
                 path = '/keypress/%s' % COMMANDS[name]
                 self._post(path)
 
+            if self.DELAY > 0:
+                time.sleep(self.DELAY)
+                
         return command
 
     def __getitem__(self, key):
