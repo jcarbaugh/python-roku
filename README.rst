@@ -3,7 +3,8 @@ python-roku
 
 Screw remotes. Control your `Roku <http://www.roku.com>`_ via Python.
 
-[![Build Status](https://travis-ci.org/jcarbaugh/python-roku.svg?branch=master)](https://travis-ci.org/jcarbaugh/python-roku)
+.. image:: https://travis-ci.org/jcarbaugh/python-roku.svg?branch=master
+    :target: https://travis-ci.org/jcarbaugh/python-roku
 
 
 Installation
