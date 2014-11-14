@@ -2,9 +2,9 @@ import unittest
 from .core import Roku, COMMANDS
 
 TEST_APPS = (
-    (11, '1.0.1', 'Fake Roku Channel Store'),
-    (22, '2.0.2', 'Fake Netflix'),
-    (33, '3.0.3', 'Fake YouTube'),
+    ('11', '1.0.1', 'Fake Roku Channel Store'),
+    ('22', '2.0.2', 'Fake Netflix'),
+    ('33', '3.0.3', 'Fake YouTube'),
 )
 
 
@@ -19,7 +19,7 @@ class TestRoku(Roku):
         resp = None
 
         if path == '/query/apps':
-            fmt = '<app id="%d" version="%s">%s</app>'
+            fmt = '<app id="%s" version="%s">%s</app>'
             resp = '<apps>%s</apps>' % "".join(fmt % a for a in TEST_APPS)
 
         self._calls.append((method, path, args, kwargs, resp))
@@ -49,7 +49,7 @@ class RokuTestCase(unittest.TestCase):
             self.assertEqual(app.version, TEST_APPS[i][1])
             self.assertEqual(app.name, TEST_APPS[i][2])
 
-        app = self.roku[22]
+        app = self.roku['22']
         self.assertEqual(app.id, TEST_APPS[1][0])
         self.assertEqual(app.version, TEST_APPS[1][1])
         self.assertEqual(app.name, TEST_APPS[1][2])

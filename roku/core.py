@@ -104,10 +104,11 @@ class Roku(object):
         return command
 
     def __getitem__(self, key):
-        if isinstance(key, int):
-            return self._app_for_id(key)
-        else:
-            return self._app_for_name(key)
+        key = str(key)
+        app = self._app_for_name(key)
+        if not app:
+            app = self._app_for_id(key)
+        return app
 
     def _app_for_name(self, name):
         for app in self.apps:
