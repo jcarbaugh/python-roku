@@ -38,7 +38,6 @@ class RokuTestCase(unittest.TestCase):
     def setUp(self):
         self.roku = TestRoku('0.0.0.0')
 
-
     def testApps(self):
 
         apps = self.roku.apps
@@ -110,7 +109,5 @@ class RokuTestCase(unittest.TestCase):
             self.assertEqual(call[3], {'params': {'contentID': app.id}})
 
 
-
 if __name__ == '__main__':
-
     unittest.main()

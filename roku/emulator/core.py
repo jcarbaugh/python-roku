@@ -7,6 +7,7 @@ DEFAULT_APPS = [
     Application(4, '4.0', 'Netflix'),
 ]
 
+
 class Emulator(object):
 
     def __init__(self, apps=None):

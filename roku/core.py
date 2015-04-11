@@ -1,7 +1,6 @@
 import logging
 import requests
 import xml.etree.ElementTree as ET
-#from lxml import etree
 
 from six.moves.urllib_parse import urlparse
 
@@ -49,7 +48,7 @@ class Application(object):
 
     def __repr__(self):
         return ('<Application: [%s] %s v%s>' %
-               (self.id, self.name, self.version))
+                (self.id, self.name, self.version))
 
     @property
     def icon(self):
