@@ -93,7 +93,7 @@ class RokuTestCase(unittest.TestCase):
 
     def testDeviceInfo(self):
 
-        d = self.roku.devinfo
+        d = self.roku.device_info
 
         self.assertEqual(d.modelname, 'Roku 3')
         self.assertEqual(d.modelnum, '4200X')

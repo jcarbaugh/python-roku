@@ -177,7 +177,7 @@ class Roku(object):
         return applications
 
     @property
-    def devinfo(self):
+    def device_info(self):
         resp = self._get('/query/device-info')
         root = ET.fromstring(resp)
 
