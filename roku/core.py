@@ -193,3 +193,10 @@ class Roku(object):
         }
 
         self.input(params)
+
+    @property
+    def current_app(self):
+        resp = self._get('/query/active-app')
+        root = ET.fromstring(resp)
+
+        return root.find('app').text
