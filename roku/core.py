@@ -155,8 +155,8 @@ class Roku(object):
         root = ET.fromstring(resp)
         for app_node in root:
             app = Application(
-                id=app_node.attrib['id'],
-                version=app_node.attrib['version'],
+                id=app_node.get('id'),
+                version=app_node.get('version'),
                 name=app_node.text,
                 roku=self,
             )
