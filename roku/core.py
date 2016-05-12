@@ -232,4 +232,16 @@ class Roku(object):
         resp = self._get('/query/active-app')
         root = ET.fromstring(resp)
 
-        return root.find('app').text
+        app_node = root.find('screensaver')
+        if app_node is None:
+            app_node = root.find('app')
+
+        if app_node is None:
+            return None
+
+        return Application(
+            id=app_node.attrib['id'],
+            version=app_node.attrib['version'],
+            name=app_node.text,
+            roku=self,
+        )
