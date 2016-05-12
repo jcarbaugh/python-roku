@@ -2,3 +2,6 @@
 .DS_Store
 .env
 dist/
+.vagrant
+build
+roku.egg-info
