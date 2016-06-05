@@ -66,15 +66,16 @@ class Application(object):
 
 class DeviceInfo(object):
 
-    def __init__(self, modelname, modelnum, swversion, sernum):
-        self.modelname = modelname
-        self.modelnum = modelnum
-        self.swversion = swversion
-        self.sernum = sernum
+    def __init__(self, model_name, model_num, software_version, serial_num):
+        self.model_name = model_name
+        self.model_num = model_num
+        self.software_version = software_version
+        self.serial_num = serial_num
 
     def __repr__(self):
         return ('<DeviceInfo: %s-%s, SW v%s, Ser# %s>' %
-                (self.modelname, self.modelnum, self.swversion, self.sernum))
+                (self.model_name, self.model_num,
+                 self.software_version, self.serial_num))
 
 
 class Roku(object):
@@ -182,14 +183,14 @@ class Roku(object):
         root = ET.fromstring(resp)
 
         dinfo = DeviceInfo(
-            modelname=root.find('model-name').text,
-            modelnum=root.find('model-number').text,
-            swversion=''.join([
+            model_name=root.find('model-name').text,
+            model_num=root.find('model-number').text,
+            software_version=''.join([
                 root.find('software-version').text,
                 '.',
                 root.find('software-build').text
             ]),
-            sernum=root.find('serial-number').text
+            serial_num=root.find('serial-number').text
         )
         return dinfo
 
