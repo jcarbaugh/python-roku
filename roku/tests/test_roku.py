@@ -96,10 +96,10 @@ def test_device_info(roku):
 
     d = roku.device_info
 
-    assert d.model_name == 'Roku 3'
-    assert d.model_num == '4200X'
-    assert d.software_version == '7.00.09044'
-    assert d.serial_num == '111111111111'
+    assert d.modelname == 'Roku 3'
+    assert d.modelnum == '4200X'
+    assert d.swversion == '7.00.09044'
+    assert d.sernum == '111111111111'
 
 
 def test_commands(roku):
