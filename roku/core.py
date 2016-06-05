@@ -64,6 +64,19 @@ class Application(object):
             self.roku.store(self)
 
 
+class DeviceInfo(object):
+
+    def __init__(self, modelname, modelnum, swversion, sernum):
+        self.modelname = modelname
+        self.modelnum = modelnum
+        self.swversion = swversion
+        self.sernum = sernum
+
+    def __repr__(self):
+        return ('<DeviceInfo: %s-%s, SW v%s, Ser# %s>' %
+                (self.modelname, self.modelnum, self.swversion, self.sernum))
+
+
 class Roku(object):
 
     @classmethod
@@ -162,6 +175,23 @@ class Roku(object):
             )
             applications.append(app)
         return applications
+
+    @property
+    def device_info(self):
+        resp = self._get('/query/device-info')
+        root = ET.fromstring(resp)
+
+        dinfo = DeviceInfo(
+            modelname=root.find('model-name').text,
+            modelnum=root.find('model-number').text,
+            swversion=''.join([
+                root.find('software-version').text,
+                '.',
+                root.find('software-build').text
+            ]),
+            sernum=root.find('serial-number').text
+        )
+        return dinfo
 
     @property
     def commands(self):

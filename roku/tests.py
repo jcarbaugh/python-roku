@@ -7,6 +7,37 @@ TEST_APPS = (
     ('33', '3.0.3', 'Fake YouTube'),
 )
 
+TEST_DEV_INFO = ''.join([
+    '<?xml version="1.0" encoding="UTF-8" ?>',
+    '<device-info>',
+    '    <udn>00000000-1111-2222-3333-444444444444</udn>',
+    '    <serial-number>111111111111</serial-number>',
+    '    <device-id>222222222222</device-id>',
+    '    <vendor-name>Roku</vendor-name>',
+    '    <model-number>4200X</model-number>',
+    '    <model-name>Roku 3</model-name>',
+    '    <wifi-mac>00:11:22:33:44:55</wifi-mac>',
+    '    <ethernet-mac>00:11:22:33:44:56</ethernet-mac>',
+    '    <network-type>ethernet</network-type>',
+    '    <user-device-name/>',
+    '    <software-version>7.00</software-version>',
+    '    <software-build>09044</software-build>',
+    '    <secure-device>true</secure-device>',
+    '    <language>en</language>',
+    '    <country>US</country>',
+    '    <locale>en_US</locale>',
+    '    <time-zone>US/Eastern</time-zone>',
+    '    <time-zone-offset>-300</time-zone-offset>',
+    '    <power-mode>PowerOn</power-mode>',
+    '    <developer-enabled>false</developer-enabled>',
+    '    <search-enabled>true</search-enabled>',
+    '    <voice-search-enabled>true</voice-search-enabled>',
+    '    <notifications-enabled>true</notifications-enabled>',
+    '    <notifications-first-use>false</notifications-first-use>',
+    '    <headphones-connected>false</headphones-connected>',
+    '</device-info>'
+])
+
 
 class TestRoku(Roku):
 
@@ -21,6 +52,8 @@ class TestRoku(Roku):
         if path == '/query/apps':
             fmt = '<app id="%s" version="%s">%s</app>'
             resp = '<apps>%s</apps>' % "".join(fmt % a for a in TEST_APPS)
+        elif path == '/query/device-info':
+            resp = TEST_DEV_INFO
 
         self._calls.append((method, path, args, kwargs, resp))
 
@@ -57,6 +90,15 @@ class RokuTestCase(unittest.TestCase):
         self.assertEqual(app.id, TEST_APPS[2][0])
         self.assertEqual(app.version, TEST_APPS[2][1])
         self.assertEqual(app.name, TEST_APPS[2][2])
+
+    def testDeviceInfo(self):
+
+        d = self.roku.device_info
+
+        self.assertEqual(d.modelname, 'Roku 3')
+        self.assertEqual(d.modelnum, '4200X')
+        self.assertEqual(d.swversion, '7.00.09044')
+        self.assertEqual(d.sernum, '111111111111')
 
     def testCommands(self):
 
