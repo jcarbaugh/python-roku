@@ -155,8 +155,8 @@ class Roku(object):
         root = ET.fromstring(resp)
         for app_node in root:
             app = Application(
-                id=app_node.attrib['id'],
-                version=app_node.attrib['version'],
+                id=app_node.get('id'),
+                version=app_node.get('version'),
                 name=app_node.text,
                 roku=self,
             )
@@ -193,3 +193,22 @@ class Roku(object):
         }
 
         self.input(params)
+
+    @property
+    def current_app(self):
+        resp = self._get('/query/active-app')
+        root = ET.fromstring(resp)
+
+        app_node = root.find('screensaver')
+        if app_node is None:
+            app_node = root.find('app')
+
+        if app_node is None:
+            return None
+
+        return Application(
+            id=app_node.get('id'),
+            version=app_node.get('version'),
+            name=app_node.text,
+            roku=self,
+        )
