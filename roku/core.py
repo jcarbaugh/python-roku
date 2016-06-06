@@ -7,8 +7,8 @@ from six.moves.urllib_parse import urlparse
 from . import discovery
 from .util import deserialize_apps
 
-__version__ = '2.0.0'
 
+__version__ = '3.0.0'
 
 
 COMMANDS = {
