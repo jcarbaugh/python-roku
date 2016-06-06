@@ -1,14 +1,15 @@
 import logging
 import requests
-import xml.etree.ElementTree as ET
 
+from lxml import etree as ET
 from six.moves.urllib_parse import urlparse
 
-from roku import discovery
+from . import discovery
+from .util import deserialize_apps
 
 __version__ = '2.0.0'
 
-roku_logger = logging.getLogger('roku')
+
 
 COMMANDS = {
     'home': 'Home',
@@ -34,6 +35,9 @@ SENSORS = ('acceleration', 'magnetic', 'orientation', 'rotation')
 TOUCH_OPS = ('up', 'down', 'press', 'move', 'cancel')
 
 
+roku_logger = logging.getLogger('roku')
+
+
 class RokuException(Exception):
     pass
 
@@ -45,6 +49,10 @@ class Application(object):
         self.version = version
         self.name = name
         self.roku = roku
+
+    def __eq__(self, other):
+        return isinstance(other, Application) and \
+            (self.id, self.version) == (other.id, other.version)
 
     def __repr__(self):
         return ('<Application: [%s] %s v%s>' %
@@ -164,17 +172,10 @@ class Roku(object):
 
     @property
     def apps(self):
-        applications = []
         resp = self._get('/query/apps')
-        root = ET.fromstring(resp)
-        for app_node in root:
-            app = Application(
-                id=app_node.get('id'),
-                version=app_node.get('version'),
-                name=app_node.text,
-                roku=self,
-            )
-            applications.append(app)
+        applications = deserialize_apps(resp)
+        for a in applications:
+            a.roku = self
         return applications
 
     @property

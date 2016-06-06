@@ -1,42 +1,12 @@
+import os
+
 import pytest
-from roku.core import Roku, COMMANDS
 
-TEST_APPS = (
-    ('11', '1.0.1', 'Fake Roku Channel Store'),
-    ('22', '2.0.2', 'Fake Netflix'),
-    ('33', '3.0.3', 'Fake YouTube'),
-)
+from roku.core import Application, Roku, COMMANDS
+from roku.util import serialize_apps
 
-TEST_DEV_INFO = ''.join([
-    '<?xml version="1.0" encoding="UTF-8" ?>',
-    '<device-info>',
-    '    <udn>00000000-1111-2222-3333-444444444444</udn>',
-    '    <serial-number>111111111111</serial-number>',
-    '    <device-id>222222222222</device-id>',
-    '    <vendor-name>Roku</vendor-name>',
-    '    <model-number>4200X</model-number>',
-    '    <model-name>Roku 3</model-name>',
-    '    <wifi-mac>00:11:22:33:44:55</wifi-mac>',
-    '    <ethernet-mac>00:11:22:33:44:56</ethernet-mac>',
-    '    <network-type>ethernet</network-type>',
-    '    <user-device-name/>',
-    '    <software-version>7.00</software-version>',
-    '    <software-build>09044</software-build>',
-    '    <secure-device>true</secure-device>',
-    '    <language>en</language>',
-    '    <country>US</country>',
-    '    <locale>en_US</locale>',
-    '    <time-zone>US/Eastern</time-zone>',
-    '    <time-zone-offset>-300</time-zone-offset>',
-    '    <power-mode>PowerOn</power-mode>',
-    '    <developer-enabled>false</developer-enabled>',
-    '    <search-enabled>true</search-enabled>',
-    '    <voice-search-enabled>true</voice-search-enabled>',
-    '    <notifications-enabled>true</notifications-enabled>',
-    '    <notifications-first-use>false</notifications-first-use>',
-    '    <headphones-connected>false</headphones-connected>',
-    '</device-info>'
-])
+
+TESTS_PATH = os.path.abspath(os.path.dirname(__file__))
 
 
 class Fauxku(Roku):
@@ -46,18 +16,8 @@ class Fauxku(Roku):
         self._calls = []
 
     def _call(self, method, path, *args, **kwargs):
-
-        resp = None
-
-        if path == '/query/apps':
-            fmt = '<app id="%s" version="%s">%s</app>'
-            resp = '<apps>%s</apps>' % "".join(fmt % a for a in TEST_APPS)
-        elif path == '/query/device-info':
-            resp = TEST_DEV_INFO
-
-        self._calls.append((method, path, args, kwargs, resp))
-
-        return resp
+        self._calls.append((method, path, args, kwargs))
+        return ''
 
     def calls(self):
         return self._calls
@@ -71,28 +31,51 @@ def roku():
     return Fauxku('0.0.0.0')
 
 
-def test_apps(roku):
+@pytest.fixture
+def apps(roku):
+    faux_apps = [
+        Application('11', '1.0.1', 'Fauxku Channel Store', roku),
+        Application('22', '2.0.2', 'Faux Netflix', roku),
+        Application('33', '3.0.3', 'Faux YouTube', roku),
+        Application('44HL', '4.0.4', 'Faux Hulu', roku),
+    ]
+    return faux_apps
+
+
+def test_apps(mocker, roku):
+
+    faux_apps = (Application('0x', '1.2.3', 'Fauxku Channel Store'),)
+
+    mocked_get = mocker.patch.object(Roku, '_get')
+    mocked_get.return_value = serialize_apps(faux_apps)
 
     apps = roku.apps
-    assert len(apps) == 3
 
-    for i, app in enumerate(apps):
-        assert app.id == TEST_APPS[i][0]
-        assert app.version == TEST_APPS[i][1]
-        assert app.name == TEST_APPS[i][2]
-
-    app = roku['22']
-    assert app.id == TEST_APPS[1][0]
-    assert app.version == TEST_APPS[1][1]
-    assert app.name == TEST_APPS[1][2]
-
-    app = roku['Fake YouTube']
-    assert app.id == TEST_APPS[2][0]
-    assert app.version == TEST_APPS[2][1]
-    assert app.name == TEST_APPS[2][2]
+    assert len(apps) == 1
+    assert apps[0].id == '0x'
+    assert apps[0].version == '1.2.3'
+    assert apps[0].name == 'Fauxku Channel Store'
 
 
-def test_device_info(roku):
+def test_app_selector(mocker, apps):
+
+    mocked_get = mocker.patch.object(Roku, '_get')
+    mocked_get.return_value = serialize_apps(apps)
+
+    for app in apps:
+        roku = app.roku
+        assert roku[app.id] == app
+        assert roku[app.name] == app
+
+
+def test_device_info(mocker, roku):
+
+    xml_path = os.path.join(TESTS_PATH, 'responses', 'device-info.xml')
+    with open(xml_path) as infile:
+        content = infile.read()
+
+    mocked_get = mocker.patch.object(Roku, '_get')
+    mocked_get.return_value = content.encode('utf-8')
 
     d = roku.device_info
 
@@ -107,15 +90,13 @@ def test_commands(roku):
     for cmd in roku.commands:
 
         if cmd == 'literal':
+            # there is a separate test for the literal command
             continue
 
         getattr(roku, cmd)()
         call = roku.last_call()
 
-        assert call[0] == 'POST'
-        assert call[1] == '/keypress/%s' % COMMANDS[cmd]
-        assert call[2] == ()
-        assert call[3] == {}
+        assert call == ('POST', '/keypress/%s' % COMMANDS[cmd], (), {})
 
 
 def test_literal(roku):
@@ -124,33 +105,28 @@ def test_literal(roku):
     roku.literal(text)
 
     for i, call in enumerate(roku.calls()):
-        assert call[0] == 'POST'
-        assert call[1] == '/keypress/Lit_%s' % text[i].upper()
-        assert call[2] == ()
-        assert call[3] == {}
+        assert call == ('POST', '/keypress/Lit_%s' % text[i].upper(), (), {})
 
 
-def test_store(roku):
+def test_store(apps):
 
-    for app in roku.apps:
+    for app in apps:
 
+        roku = app.roku
         roku.store(app)
         call = roku.last_call()
 
-        assert call[0] == 'POST'
-        assert call[1] == '/launch/11'
-        assert call[2] == ()
-        assert call[3] == {'params': {'contentID': app.id}}
+        params = {'params': {'contentID': app.id}}
+        assert call == ('POST', '/launch/11', (), params)
 
 
-def test_launch(roku):
+def test_launch(apps):
 
-    for app in roku.apps:
+    for app in apps:
 
+        roku = app.roku
         roku.launch(app)
         call = roku.last_call()
 
-        assert call[0] == 'POST'
-        assert call[1] == '/launch/%s' % app.id
-        assert call[2] == ()
-        assert call[3] == {'params': {'contentID': app.id}}
+        params = {'params': {'contentID': app.id}}
+        assert call == ('POST', '/launch/%s' % app.id, (), params)
