@@ -6,7 +6,7 @@ from six.moves.urllib_parse import urlparse
 
 from roku import discovery
 
-__version__ = '2.0.0'
+__version__ = '3.1.2'
 
 roku_logger = logging.getLogger('roku')
 
