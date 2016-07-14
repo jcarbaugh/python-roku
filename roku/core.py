@@ -28,6 +28,9 @@ COMMANDS = {
     'search': 'Search',
     'enter': 'Enter',
     'literal': 'Lit',
+    'volumeup': 'VolumeUp',
+    'volumedown': 'VolumeDown',
+    'mute': 'VolumeMute',
 }
 
 SENSORS = ('acceleration', 'magnetic', 'orientation', 'rotation')
