@@ -28,6 +28,7 @@ COMMANDS = {
     'search': 'Search',
     'enter': 'Enter',
     'literal': 'Lit',
+    'power': 'Power',
 }
 
 SENSORS = ('acceleration', 'magnetic', 'orientation', 'rotation')
