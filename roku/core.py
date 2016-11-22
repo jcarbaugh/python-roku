@@ -11,7 +11,7 @@ from .util import deserialize_apps
 __version__ = '3.0.0'
 
 
-COMMANDS = {
+ECP_KEYS = {
     'home': 'Home',
     'reverse': 'Rev',
     'forward': 'Fwd',
@@ -28,6 +28,15 @@ COMMANDS = {
     'search': 'Search',
     'enter': 'Enter',
     'literal': 'Lit',
+}
+
+ROKUTV_KEYS = {
+    'channel_down': 'ChannelDown',
+    'channel_up': 'ChannelUp',
+    'mute': 'VolumeMute',
+    'power': 'Power',
+    'volume_down': 'VolumeDown',
+    'volume_up': 'VolumeUp',
 }
 
 SENSORS = ('acceleration', 'magnetic', 'orientation', 'rotation')
@@ -101,13 +110,15 @@ class Roku(object):
         self.port = port
         self._conn = None
 
+        self.supported_keys = ECP_KEYS.copy()
+
     def __repr__(self):
         return "<Roku: %s:%s>" % (self.host, self.port)
 
     def __getattr__(self, name):
 
-        if name not in COMMANDS and name not in SENSORS:
-            raise AttributeError('%s is not a valid method' % name)
+        if name not in self.supported_keys and name not in SENSORS:
+            raise AttributeError('%s is not a valid key or sensor' % name)
 
         def command(*args):
             if name in SENSORS:
@@ -116,10 +127,11 @@ class Roku(object):
                 self.input(params)
             elif name == 'literal':
                 for char in args[0]:
-                    path = '/keypress/%s_%s' % (COMMANDS[name], char.upper())
+                    path = '/keypress/%s_%s' % (
+                        self.supported_keys[name], char.upper())
                     self._post(path)
             else:
-                path = '/keypress/%s' % COMMANDS[name]
+                path = '/keypress/%s' % self.supported_keys[name]
                 self._post(path)
 
         return command
@@ -197,7 +209,7 @@ class Roku(object):
 
     @property
     def commands(self):
-        return sorted(COMMANDS.keys())
+        return sorted(self.supported_keys.keys())
 
     def icon(self, app):
         return self._get('/query/icon/%s' % app.id)
@@ -244,3 +256,25 @@ class Roku(object):
             name=app_node.text,
             roku=self,
         )
+
+
+class RokuTV(Roku):
+
+    INPUT_AV1 = 'AV1'
+    INPUT_HDMI1 = 'HDMI1'
+    INPUT_HDMI2 = 'HDMI2'
+    INPUT_HDMI3 = 'HDMI3'
+    INPUT_HDMI4 = 'HDMI4'
+    INPUT_TUNER = 'Tuner'
+
+    TV_INPUTS = (INPUT_AV1, INPUT_HDMI1, INPUT_HDMI2,
+                 INPUT_HDMI3, INPUT_HDMI4, INPUT_TUNER)
+
+    def __init__(self, *args, **kwargs):
+        super(RokuTV, self).__init__(*args, **kwargs)
+        self.supported_keys.update(ROKUTV_KEYS)
+
+    def set_input(self, tv_input):
+        if tv_input not in self.TV_INPUTS:
+            raise RokuException('%s is not a valid TV input' % tv_input)
+        return self._post('/keypress/Input{}'.format(tv_input))
