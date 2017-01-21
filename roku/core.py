@@ -43,10 +43,12 @@ class RokuException(Exception):
 
 class Application(object):
 
-    def __init__(self, id, version, name, roku=None):
+    def __init__(self, id, version, name, is_screensaver=False,
+                 roku=None):
         self.id = str(id)
         self.version = version
         self.name = name
+        self.is_screensaver = is_screensaver
         self.roku = roku
 
     def __repr__(self):
@@ -233,10 +235,12 @@ class Roku(object):
     def current_app(self):
         resp = self._get('/query/active-app')
         root = ET.fromstring(resp)
+        is_screensaver = True
 
         app_node = root.find('screensaver')
         if app_node is None:
             app_node = root.find('app')
+            is_screensaver = False
 
         if app_node is None:
             return None
@@ -245,5 +249,6 @@ class Roku(object):
             id=app_node.get('id'),
             version=app_node.get('version'),
             name=app_node.text,
+            is_screensaver=is_screensaver,
             roku=self,
         )
