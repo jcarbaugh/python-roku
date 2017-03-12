@@ -1,6 +1,12 @@
+# -*- coding: utf-8 -*-
 import os
 
 import pytest
+
+try:
+    from urllib.parse import quote_plus
+except ImportError:
+    from urllib import quote_plus
 
 from roku.core import Application, Roku, COMMANDS
 from roku.util import serialize_apps
@@ -105,7 +111,16 @@ def test_literal(roku):
     roku.literal(text)
 
     for i, call in enumerate(roku.calls()):
-        assert call == ('POST', '/keypress/Lit_%s' % text[i].upper(), (), {})
+        assert call == ('POST', '/keypress/Lit_%s' % quote_plus(text[i]), (), {})
+
+
+def test_literal_fancy(roku):
+
+    text = r"""~!@#$%^&*()_+`-=[]{};':",./<>?\|€£"""
+    roku.literal(text)
+
+    for i, call in enumerate(roku.calls()):
+        assert call == ('POST', '/keypress/Lit_%s' % quote_plus(text[i]), (), {})
 
 
 def test_store(apps):
