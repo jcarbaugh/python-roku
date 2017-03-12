@@ -93,6 +93,10 @@ Okay, I've already seen all of the available episodes of Nashville, so I'm going
 
     >>> roku.literal('stargate')
 
+What if I now want to watch *The Informant!*? Again, with the search open and waiting for text entry::
+
+    >>> roku.literal('The Informant!')
+
 This will iterate over each character, sending it individually to the Roku.
 
 
