@@ -7,6 +7,11 @@ from six.moves.urllib_parse import urlparse
 from . import discovery
 from .util import deserialize_apps
 
+try:
+    from urllib.parse import quote_plus
+except ImportError:
+    from urllib import quote_plus
+
 
 __version__ = '3.0.0'
 
@@ -117,7 +122,7 @@ class Roku(object):
                 self.input(params)
             elif name == 'literal':
                 for char in args[0]:
-                    path = '/keypress/%s_%s' % (COMMANDS[name], char.upper())
+                    path = '/keypress/%s_%s' % (COMMANDS[name], quote_plus(char))
                     self._post(path)
             else:
                 path = '/keypress/%s' % COMMANDS[name]
