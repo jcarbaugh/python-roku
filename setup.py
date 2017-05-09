@@ -12,7 +12,7 @@ setup(
     long_description=readme,
     author='Jeremy Carbaugh',
     author_email='jcarbaugh@gmail.com',
-    url='https://github.com/jcarbaugh/python-roku',
+    url='https://github.com/bah2830/python-roku',
     packages=find_packages(),
     install_requires=[
         'requests>=2.1.0',
