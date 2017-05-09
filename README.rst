@@ -12,7 +12,7 @@ Installation
 
 ::
 
-    pip install roku
+    pip install python-roku
 
 
 Usage

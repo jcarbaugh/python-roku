@@ -6,7 +6,7 @@ readme = f.read()
 f.close()
 
 setup(
-    name='roku',
+    name='python-roku',
     version='3.1.3',
     description='Client for the Roku media player',
     long_description=readme,

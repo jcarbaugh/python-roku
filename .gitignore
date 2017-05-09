@@ -4,4 +4,4 @@
 dist/
 .vagrant
 build
-roku.egg-info
+python_roku.egg-info
