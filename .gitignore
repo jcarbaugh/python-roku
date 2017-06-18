@@ -5,3 +5,4 @@
 .tox/
 dist/
 .venv/
+*.egg-info
