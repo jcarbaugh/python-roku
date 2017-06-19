@@ -115,6 +115,11 @@ class Roku(object):
                 for char in args[0]:
                     path = '/keypress/%s_%s' % (COMMANDS[name], char.upper())
                     self._post(path)
+            elif name == 'search':
+                keys = ['title', 'season']
+                params = dict(zip(keys, args))
+                path = '/search/browse'
+                self._post(path, params=params)
             else:
                 path = '/keypress/%s' % COMMANDS[name]
                 self._post(path)
