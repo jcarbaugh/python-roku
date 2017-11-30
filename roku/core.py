@@ -34,6 +34,9 @@ COMMANDS = {
     'enter': 'Enter',
     'literal': 'Lit',
     'power': 'Power',
+    'volume_down': 'VolumeDown',
+    'volume_mute': 'VolumeMute',
+    'volume_up': 'VolumeUp',
 }
 
 SENSORS = ('acceleration', 'magnetic', 'orientation', 'rotation')
