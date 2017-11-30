@@ -185,6 +185,15 @@ class Roku(object):
         return applications
 
     @property
+    def active_app(self):
+        resp = self._get('/query/active-app')
+        active_app = deserialize_apps(resp)
+        if len(active_app):
+            return active_app[0]
+        else:
+            return None
+
+    @property
     def device_info(self):
         resp = self._get('/query/device-info')
         root = ET.fromstring(resp)
