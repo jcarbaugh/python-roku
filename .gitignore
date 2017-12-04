@@ -4,3 +4,5 @@
 .cache/
 .tox/
 dist/
+.venv/
+*.egg-info
