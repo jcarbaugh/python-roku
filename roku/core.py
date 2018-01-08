@@ -209,7 +209,7 @@ class Roku(object):
 
     @property
     def power_mode(self):
-        resp = self.__get('/query/device-info')
+        resp = self._get('/query/device-info')
         root = ET.fromstring(resp)
         return root.find('power-mode').text
 
