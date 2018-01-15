@@ -7,7 +7,7 @@ f.close()
 
 setup(
     name='python-roku',
-    version='3.1.4',
+    version='3.1.5',
     description='Client for the Roku media player',
     long_description=readme,
     author='Jeremy Carbaugh',
