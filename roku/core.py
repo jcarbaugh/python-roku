@@ -236,6 +236,9 @@ class Roku(object):
             raise RokuException('this app belongs to another Roku')
         return self._post('/launch/%s' % app.id, params={'contentID': app.id})
 
+    def channel(self, ch=""):
+        return self._post('/launch/tvinput.dtv?ch=%s' % ch)
+
     def store(self, app):
         return self._post('/launch/11', params={'contentID': app.id})
 
