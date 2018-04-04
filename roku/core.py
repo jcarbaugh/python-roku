@@ -102,7 +102,14 @@ class Roku(object):
         rokus = []
         for device in discovery.discover(*args, **kwargs):
             o = urlparse(device.location)
-            rokus.append(Roku(o.hostname, o.port))
+            roku = Roku(o.hostname, o.port)
+            device_info_response = roku._get('/query/device-info')
+            device_info = ET.fromstring(device_info_response)
+            is_tv = device_info.find('is-tv').text
+            if is_tv == "true":
+                rokus.append(RokuTV(o.hostname, o.port))
+            else:
+                rokus.append(roku)
         return rokus
 
     def __init__(self, host, port=8060):
