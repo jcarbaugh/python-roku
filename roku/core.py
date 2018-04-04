@@ -266,6 +266,10 @@ class Roku(object):
             roku=self,
         )
 
+    @property
+    def is_tv(self):
+        return isinstance(self, RokuTV)
+
 
 class RokuTV(Roku):
 
@@ -287,3 +291,9 @@ class RokuTV(Roku):
         if tv_input not in self.TV_INPUTS:
             raise RokuException('%s is not a valid TV input' % tv_input)
         return self._post('/keypress/Input{}'.format(tv_input))
+
+    @property
+    def current_power_mode(self):
+        resp = self._get('/query/device-info')
+        root = ET.fromstring(resp)
+        return root.find('power-mode').text
