@@ -35,6 +35,8 @@ ROKUTV_KEYS = {
     'channel_up': 'ChannelUp',
     'mute': 'VolumeMute',
     'power': 'Power',
+    'power_on': 'PowerOn',
+    'power_off': 'PowerOff',
     'volume_down': 'VolumeDown',
     'volume_up': 'VolumeUp',
 }
