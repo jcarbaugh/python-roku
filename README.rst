@@ -85,6 +85,12 @@ You can also get the app's icon.
     >>> with open('hulu.png', 'w') as f:
     ...     f.write(hulu.icon)
 
+You can get the current running app.
+::
+
+    >>> roku.active_app
+    <Application: [12] Netflix v4.2.75015046>
+
 
 Entering Text
 ~~~~~~~~~~~~~
