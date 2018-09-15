@@ -115,8 +115,7 @@ class DeviceInfo(object):
     def __repr__(self):
         return ('<DeviceInfo: %s-%s, SW v%s, Ser# %s>' %
                 (self.model_name, self.model_num,
-                 self.software_version, self.serial_num,
-                 self.user_device_name))
+                 self.software_version, self.serial_num))
 
 
 class Roku(object):
@@ -238,7 +237,7 @@ class Roku(object):
                 '.',
                 root.find('software-build').text
             ]),
-            serial_num=root.find('serial-number').text
+            serial_num=root.find('serial-number').text,
             user_device_name=root.find('user-device-name').text
         )
         return dinfo
