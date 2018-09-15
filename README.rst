@@ -85,6 +85,12 @@ You can also get the app's icon.
     >>> with open('hulu.png', 'w') as f:
     ...     f.write(hulu.icon)
 
+You can get the current running app.
+::
+
+    >>> roku.active_app
+    <Application: [12] Netflix v4.2.75015046>
+
 
 Entering Text
 ~~~~~~~~~~~~~
@@ -92,6 +98,10 @@ Entering Text
 Okay, I've already seen all of the available episodes of Nashville, so I'm going to search for *Stargate*. With the search open and waiting for text entry::
 
     >>> roku.literal('stargate')
+
+What if I now want to watch *The Informant!*? Again, with the search open and waiting for text entry::
+
+    >>> roku.literal('The Informant!')
 
 This will iterate over each character, sending it individually to the Roku.
 

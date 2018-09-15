@@ -19,6 +19,11 @@ def list_apps():
     pass
 
 
+@app.route('/query/active-app')
+def active_app():
+    pass
+
+
 @app.route('/query/icon/<app_id>')
 def app_icon(app_id):
     pass

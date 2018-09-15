@@ -1,14 +1,20 @@
 import logging
 import requests
-import xml.etree.ElementTree as ET
 
+from lxml import etree as ET
 from six.moves.urllib_parse import urlparse
 
-from roku import discovery
+from . import discovery
+from .util import deserialize_apps
 
-__version__ = '3.1.5'
+try:
+    from urllib.parse import quote_plus
+except ImportError:
+    from urllib import quote_plus
 
-roku_logger = logging.getLogger('roku')
+
+__version__ = '3.0.0'
+
 
 COMMANDS = {
     # Standard Keys
@@ -50,12 +56,15 @@ COMMANDS = {
     'input_av1': 'InputAV1',
 
     # For devices that support being turned on/off
-    'power': 'Power'
+    'power': 'Power',
 }
 
 SENSORS = ('acceleration', 'magnetic', 'orientation', 'rotation')
 
 TOUCH_OPS = ('up', 'down', 'press', 'move', 'cancel')
+
+
+roku_logger = logging.getLogger('roku')
 
 
 class RokuException(Exception):
@@ -71,6 +80,10 @@ class Application(object):
         self.name = name
         self.is_screensaver = is_screensaver
         self.roku = roku
+
+    def __eq__(self, other):
+        return isinstance(other, Application) and \
+            (self.id, self.version) == (other.id, other.version)
 
     def __repr__(self):
         return ('<Application: [%s] %s v%s>' %
@@ -92,16 +105,18 @@ class Application(object):
 
 class DeviceInfo(object):
 
-    def __init__(self, modelname, modelnum, swversion, sernum, userdevicename):
-        self.modelname = modelname
-        self.modelnum = modelnum
-        self.swversion = swversion
-        self.sernum = sernum
-        self.userdevicename = userdevicename
+    def __init__(self, model_name, model_num, software_version, serial_num, user_device_name):
+        self.model_name = model_name
+        self.model_num = model_num
+        self.software_version = software_version
+        self.serial_num = serial_num
+        self.user_device_name = user_device_name
 
     def __repr__(self):
-        return ('<DeviceInfo: %s-%s, SW v%s, Ser# %s, Name %s>' %
-                (self.modelname, self.modelnum, self.swversion, self.sernum, self.userdevicename))
+        return ('<DeviceInfo: %s-%s, SW v%s, Ser# %s>' %
+                (self.model_name, self.model_num,
+                 self.software_version, self.serial_num,
+                 self.user_device_name))
 
 
 class Roku(object):
@@ -195,18 +210,20 @@ class Roku(object):
 
     @property
     def apps(self):
-        applications = []
         resp = self._get('/query/apps')
-        root = ET.fromstring(resp)
-        for app_node in root:
-            app = Application(
-                id=app_node.get('id'),
-                version=app_node.get('version'),
-                name=app_node.text,
-                roku=self,
-            )
-            applications.append(app)
+        applications = deserialize_apps(resp)
+        for a in applications:
+            a.roku = self
         return applications
+
+    @property
+    def active_app(self):
+        resp = self._get('/query/active-app')
+        active_app = deserialize_apps(resp)
+        if len(active_app):
+            return active_app[0]
+        else:
+            return None
 
     @property
     def device_info(self):
@@ -214,15 +231,15 @@ class Roku(object):
         root = ET.fromstring(resp)
 
         dinfo = DeviceInfo(
-            modelname=root.find('model-name').text,
-            modelnum=root.find('model-number').text,
-            swversion=''.join([
+            model_name=root.find('model-name').text,
+            model_num=root.find('model-number').text,
+            software_version=''.join([
                 root.find('software-version').text,
                 '.',
                 root.find('software-build').text
             ]),
-            sernum=root.find('serial-number').text,
-            userdevicename=root.find('user-device-name').text
+            serial_num=root.find('serial-number').text
+            user_device_name=root.find('user-device-name').text
         )
         return dinfo
 

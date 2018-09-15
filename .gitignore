@@ -1,7 +1,6 @@
 *.pyc
 .DS_Store
 .env
+.cache/
+.tox/
 dist/
-.vagrant
-build
-python_roku.egg-info
