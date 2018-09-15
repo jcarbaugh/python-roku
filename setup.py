@@ -6,13 +6,13 @@ readme = f.read()
 f.close()
 
 setup(
-    name='python-roku',
-    version='3.1.5',
+    name='roku',
+    version='2.0.0',
     description='Client for the Roku media player',
     long_description=readme,
     author='Jeremy Carbaugh',
     author_email='jcarbaugh@gmail.com',
-    url='https://github.com/bah2830/python-roku',
+    url='https://github.com/jcarbaugh/python-roku',
     packages=find_packages(),
     install_requires=[
         'lxml>=3.6,<3.7',

@@ -149,7 +149,7 @@ class Roku(object):
                 self.input(params)
             elif name == 'literal':
                 for char in args[0]:
-                    path = '/keypress/%s_%s' % (COMMANDS[name], char.upper())
+                    path = '/keypress/%s_%s' % (COMMANDS[name], quote_plus(char))
                     self._post(path)
             elif name == 'search':
                 keys = ['title', 'season', 'launch', 'provider', 'type']
@@ -253,7 +253,7 @@ class Roku(object):
     def launch(self, app):
         if app.roku and app.roku != self:
             raise RokuException('this app belongs to another Roku')
-        return self._post('/launch/%s' % app.id)
+        return self._post('/launch/%s' % app.id, params={'contentID': app.id})
 
     def store(self, app):
         return self._post('/launch/11', params={'contentID': app.id})
