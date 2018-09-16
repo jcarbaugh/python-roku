@@ -73,8 +73,7 @@ class RokuException(Exception):
 
 class Application(object):
 
-    def __init__(self, id, version, name, is_screensaver=False,
-                 roku=None):
+    def __init__(self, id, version, name, roku=None, is_screensaver=False):
         self.id = str(id)
         self.version = version
         self.name = name
