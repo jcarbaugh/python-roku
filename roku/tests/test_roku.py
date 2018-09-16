@@ -95,14 +95,24 @@ def test_commands(roku):
 
     for cmd in roku.commands:
 
-        if cmd == 'literal':
-            # there is a separate test for the literal command
+        if cmd in ['literal', 'search']:
+            # there is a separate test for the literal and search command
             continue
 
         getattr(roku, cmd)()
         call = roku.last_call()
 
         assert call == ('POST', '/keypress/%s' % COMMANDS[cmd], (), {})
+
+
+def test_search(roku):
+
+    text = 'Stargate'
+    roku.search(text)
+
+    call = roku.last_call()
+
+    assert call == ('POST', '/search/browse', (), {'params': {'title': text}})
 
 
 def test_literal(roku):

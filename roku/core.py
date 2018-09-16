@@ -73,10 +73,11 @@ class RokuException(Exception):
 
 class Application(object):
 
-    def __init__(self, id, version, name, roku=None):
+    def __init__(self, id, version, name, roku=None, is_screensaver=False):
         self.id = str(id)
         self.version = version
         self.name = name
+        self.is_screensaver = is_screensaver
         self.roku = roku
 
     def __eq__(self, other):
@@ -103,11 +104,12 @@ class Application(object):
 
 class DeviceInfo(object):
 
-    def __init__(self, model_name, model_num, software_version, serial_num):
+    def __init__(self, model_name, model_num, software_version, serial_num, user_device_name):
         self.model_name = model_name
         self.model_num = model_num
         self.software_version = software_version
         self.serial_num = serial_num
+        self.user_device_name = user_device_name
 
     def __repr__(self):
         return ('<DeviceInfo: %s-%s, SW v%s, Ser# %s>' %
@@ -147,6 +149,11 @@ class Roku(object):
                 for char in args[0]:
                     path = '/keypress/%s_%s' % (COMMANDS[name], quote_plus(char))
                     self._post(path)
+            elif name == 'search':
+                keys = ['title', 'season', 'launch', 'provider', 'type']
+                params = dict(zip(keys, args))
+                path = '/search/browse'
+                self._post(path, params=params)
             else:
                 path = '/keypress/%s' % COMMANDS[name]
                 self._post(path)
@@ -194,7 +201,7 @@ class Roku(object):
         func = getattr(self._conn, method.lower())
         resp = func(url, *args, **kwargs)
 
-        if resp.status_code != 200:
+        if resp.status_code not in [200, 204]:
             raise RokuException(resp.content)
 
         return resp.content
@@ -229,7 +236,8 @@ class Roku(object):
                 '.',
                 root.find('software-build').text
             ]),
-            serial_num=root.find('serial-number').text
+            serial_num=root.find('serial-number').text,
+            user_device_name=root.find('user-device-name').text
         )
         return dinfo
 
@@ -268,10 +276,12 @@ class Roku(object):
     def current_app(self):
         resp = self._get('/query/active-app')
         root = ET.fromstring(resp)
+        is_screensaver = True
 
         app_node = root.find('screensaver')
         if app_node is None:
             app_node = root.find('app')
+            is_screensaver = False
 
         if app_node is None:
             return None
@@ -280,5 +290,6 @@ class Roku(object):
             id=app_node.get('id'),
             version=app_node.get('version'),
             name=app_node.text,
+            is_screensaver=is_screensaver,
             roku=self,
         )
