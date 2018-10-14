@@ -6,6 +6,8 @@
     <vendor-name>Roku</vendor-name>
     <model-number>4200X</model-number>
     <model-name>Roku 3</model-name>
+    <is-tv>false</is-tv>
+    <is-stick>true</is-stick>
     <wifi-mac>00:11:22:33:44:55</wifi-mac>
     <ethernet-mac>00:11:22:33:44:56</ethernet-mac>
     <network-type>ethernet</network-type>
