@@ -57,6 +57,7 @@ COMMANDS = {
 
     # For devices that support being turned on/off
     'power': 'Power',
+    'poweroff': 'PowerOff',
 }
 
 SENSORS = ('acceleration', 'magnetic', 'orientation', 'rotation')
@@ -104,17 +105,18 @@ class Application(object):
 
 class DeviceInfo(object):
 
-    def __init__(self, model_name, model_num, software_version, serial_num, user_device_name):
+    def __init__(self, model_name, model_num, software_version, serial_num, user_device_name, roku_type):
         self.model_name = model_name
         self.model_num = model_num
         self.software_version = software_version
         self.serial_num = serial_num
         self.user_device_name = user_device_name
+        self.roku_type = roku_type
 
     def __repr__(self):
-        return ('<DeviceInfo: %s-%s, SW v%s, Ser# %s>' %
+        return ('<DeviceInfo: %s-%s, SW v%s, Ser# %s (%s)>' %
                 (self.model_name, self.model_num,
-                 self.software_version, self.serial_num))
+                 self.software_version, self.serial_num, self.roku_type))
 
 
 class Roku(object):
@@ -228,6 +230,12 @@ class Roku(object):
         resp = self._get('/query/device-info')
         root = ET.fromstring(resp)
 
+        roku_type = "Box"
+        if root.find('is-tv') != None and root.find('is-tv').text == "true":
+            roku_type = "TV"
+        elif root.find('is-stick') != None and \
+             root.find('is-stick').text == "true":
+            roku_type = "Stick"
         dinfo = DeviceInfo(
             model_name=root.find('model-name').text,
             model_num=root.find('model-number').text,
@@ -237,13 +245,25 @@ class Roku(object):
                 root.find('software-build').text
             ]),
             serial_num=root.find('serial-number').text,
-            user_device_name=root.find('user-device-name').text
+            user_device_name=root.find('user-device-name').text,
+            roku_type=roku_type
         )
         return dinfo
 
     @property
     def commands(self):
         return sorted(COMMANDS.keys())
+
+    @property
+    def power_state(self):
+        resp = self._get('/query/device-info')
+        root = ET.fromstring(resp)
+        if root.find('power-mode').text:
+            if root.find('power-mode').text == 'PowerOn':
+                return "On"
+            else:
+                return "Off"
+        return "Unknown"
 
     def icon(self, app):
         return self._get('/query/icon/%s' % app.id)
