@@ -32,3 +32,19 @@ def serialize_apps(apps):
         content = bffr.getvalue()
 
     return content
+
+def deserialize_channels(doc, roku=None):
+
+    from .core import Channel
+
+    channels = []
+    root = ET.fromstring(doc)
+
+    for elem in root:
+        channel = Channel(
+            number=elem.find('number').text,
+            name=elem.find('name').text,
+            roku=roku,
+        )
+        channels.append(channel)
+    return channels
