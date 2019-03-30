@@ -57,6 +57,8 @@ COMMANDS = {
 
     # For devices that support being turned on/off
     'power': 'Power',
+    'power_on': 'PowerOn',
+    'power_off': 'PowerOff',
 }
 
 SENSORS = ('acceleration', 'magnetic', 'orientation', 'rotation')
