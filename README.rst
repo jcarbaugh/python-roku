@@ -167,6 +167,10 @@ Supported events are:
 
 Multitouch is not yet supported in this package.
 
+Integrations
+~~~~~~~~~~~~
+* `pyrokuserve <https://github.com/lingster/pyrokuserve>`_
+* `Home Assistant <https://www.home-assistant.io/components/roku/>`_
 
 Generic Input
 ~~~~~~~~~~~~~
