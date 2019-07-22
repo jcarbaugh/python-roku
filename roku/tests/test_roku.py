@@ -89,6 +89,7 @@ def test_device_info(mocker, roku):
     assert d.model_num == '4200X'
     assert d.software_version == '7.00.09044'
     assert d.serial_num == '111111111111'
+    assert d.roku_type == 'Stick'
 
 
 def test_commands(roku):
