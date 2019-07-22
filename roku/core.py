@@ -127,10 +127,11 @@ class Roku(object):
             rokus.append(Roku(o.hostname, o.port))
         return rokus
 
-    def __init__(self, host, port=8060):
+    def __init__(self, host, port=8060, timeout=10):
         self.host = host
         self.port = port
         self._conn = None
+        self.timeout = timeout
 
     def __repr__(self):
         return "<Roku: %s:%s>" % (self.host, self.port)
@@ -199,7 +200,7 @@ class Roku(object):
             raise ValueError('only GET and POST HTTP methods are supported')
 
         func = getattr(self._conn, method.lower())
-        resp = func(url, *args, **kwargs)
+        resp = func(url, timeout=self.timeout, *args, **kwargs)
 
         if resp.status_code not in [200, 204]:
             raise RokuException(resp.content)
