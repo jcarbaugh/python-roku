@@ -1,1 +1,1 @@
-from roku.core import Roku, Application, RokuException, __version__
+from roku.core import Roku, Application, Channel, RokuException, __version__

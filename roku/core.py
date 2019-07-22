@@ -5,7 +5,7 @@ from lxml import etree as ET
 from six.moves.urllib_parse import urlparse
 
 from . import discovery
-from .util import deserialize_apps
+from .util import deserialize_apps, deserialize_channels
 
 try:
     from urllib.parse import quote_plus
@@ -101,6 +101,27 @@ class Application(object):
     def store(self):
         if self.roku:
             self.roku.store(self)
+
+
+class Channel(object):
+
+    def __init__(self, number, name, roku=None):
+        self.number = str(number)
+        self.name = name
+        self.roku = roku
+
+    def __eq__(self, other):
+        return isinstance(other, Channel) and \
+            (self.number, self.name) == (other.number, other.name)
+
+    def __repr__(self):
+        return ('<Channel: [%s] %s>' %
+                (self.number, self.name))
+
+    def launch(self):
+        if self.roku:
+            tv_app = Application(id= 'tvinput.dtv', version=None, name='TV', roku=self.roku)
+            self.roku.launch(tv_app, {'ch': self.number})
 
 
 class DeviceInfo(object):
@@ -227,6 +248,14 @@ class Roku(object):
             return None
 
     @property
+    def tv_channels(self):
+        resp = self._get('/query/tv-channels')
+        channels = deserialize_channels(resp)
+        for c in channels:
+            c.roku = self
+        return channels
+
+    @property
     def device_info(self):
         resp = self._get('/query/device-info')
         root = ET.fromstring(resp)
@@ -269,10 +298,11 @@ class Roku(object):
     def icon(self, app):
         return self._get('/query/icon/%s' % app.id)
 
-    def launch(self, app):
+    def launch(self, app, params={}):
         if app.roku and app.roku != self:
             raise RokuException('this app belongs to another Roku')
-        return self._post('/launch/%s' % app.id, params={'contentID': app.id})
+        params['contentID'] = app.id
+        return self._post('/launch/%s' % app.id, params=params)
 
     def store(self, app):
         return self._post('/launch/11', params={'contentID': app.id})
