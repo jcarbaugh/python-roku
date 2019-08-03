@@ -7,7 +7,7 @@ f.close()
 
 setup(
     name='roku',
-    version='3.0',
+    version='3.1',
     description='Client for the Roku media player',
     long_description=readme,
     author='Jeremy Carbaugh',
