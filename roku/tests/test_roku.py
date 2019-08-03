@@ -109,7 +109,7 @@ def test_commands(roku):
 def test_search(roku):
 
     text = 'Stargate'
-    roku.search(text)
+    roku.search(title=text)
 
     call = roku.last_call()
 
