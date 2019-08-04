@@ -15,7 +15,7 @@ setup(
     url='https://github.com/jcarbaugh/python-roku',
     packages=find_packages(),
     install_requires=[
-        'lxml>=3.6,<3.7',
+        'lxml>=4.4.0,<4.5.0',
         'requests>=2.10,<2.11',
         'six'
     ],
