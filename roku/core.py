@@ -175,7 +175,8 @@ class Roku(object):
                     self._post(path)
             elif name == 'search':
                 path = '/search/browse'
-                self._post(path, params=kwargs)
+                params = {k.replace('_', '-'): v for k, v in kwargs.items()}
+                self._post(path, params=params)
             else:
                 path = '/keypress/%s' % COMMANDS[name]
                 self._post(path)
