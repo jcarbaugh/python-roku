@@ -16,7 +16,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         'lxml>=4.4.0,<4.5.0',
-        'requests>=2.10,<2.11',
+        'requests>=2.10,<3',
         'six'
     ],
     license='BSD License',
