@@ -1,6 +1,0 @@
-lxml>=3.6,<3.7
-pytest>=2.9,<2.10
-pytest-mock>=1.1,<1.2
-requests>=2.10,<2.11
-six
-tox>=2.3,<2.4
