@@ -7,7 +7,7 @@ f.close()
 
 setup(
     name='roku',
-    version='3.0',
+    version='3.2',
     description='Client for the Roku media player',
     long_description=readme,
     author='Jeremy Carbaugh',
@@ -15,18 +15,20 @@ setup(
     url='https://github.com/jcarbaugh/python-roku',
     packages=find_packages(),
     install_requires=[
-        'lxml>=3.6,<3.7',
-        'requests>=2.10,<2.11',
+        'lxml<5',
+        'requests<3',
         'six'
     ],
     license='BSD License',
     platforms=["any"],
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
-        'Operating System :: OS Independent',
         'Programming Language :: Python',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
     ],
 )
