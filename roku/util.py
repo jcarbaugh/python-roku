@@ -1,6 +1,10 @@
 from contextlib import closing
 
-from lxml import etree as ET
+try:
+    from lxml import etree as ET
+except ImportError:
+    import xml.etree.ElementTree as ET
+
 from six import BytesIO
 
 
