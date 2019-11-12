@@ -164,7 +164,7 @@ class Roku(object):
         if name not in COMMANDS and name not in SENSORS:
             raise AttributeError('%s is not a valid method' % name)
 
-        def command(*args):
+        def command(*args, **kwargs):
             if name in SENSORS:
                 keys = ['%s.%s' % (name, axis) for axis in ('x', 'y', 'z')]
                 params = dict(zip(keys, args))
@@ -174,9 +174,8 @@ class Roku(object):
                     path = '/keypress/%s_%s' % (COMMANDS[name], quote_plus(char))
                     self._post(path)
             elif name == 'search':
-                keys = ['title', 'season', 'launch', 'provider', 'type']
-                params = dict(zip(keys, args))
                 path = '/search/browse'
+                params = {k.replace('_', '-'): v for k, v in kwargs.items()}
                 self._post(path, params=params)
             else:
                 path = '/keypress/%s' % COMMANDS[name]
