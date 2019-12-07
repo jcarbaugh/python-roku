@@ -60,6 +60,14 @@ COMMANDS = {
     'poweroff': 'PowerOff',
 }
 
+EXTENDED_FUNCTIONS = {
+    # Making the standard volume calls more iterable.
+    # Accepts an integer and calls the associated function by that arg times.
+    #     roku.volume_down_by(3)
+    'volume_down_by': 'VolumeDown',
+    'volume_up_by': 'VolumeUp',
+}
+
 SENSORS = ('acceleration', 'magnetic', 'orientation', 'rotation')
 
 TOUCH_OPS = ('up', 'down', 'press', 'move', 'cancel')
@@ -161,7 +169,7 @@ class Roku(object):
 
     def __getattr__(self, name):
 
-        if name not in COMMANDS and name not in SENSORS:
+        if name not in COMMANDS and name not in SENSORS and name not in EXTENDED_FUNCTIONS:
             raise AttributeError('%s is not a valid method' % name)
 
         def command(*args, **kwargs):
@@ -169,6 +177,10 @@ class Roku(object):
                 keys = ['%s.%s' % (name, axis) for axis in ('x', 'y', 'z')]
                 params = dict(zip(keys, args))
                 self.input(params)
+            elif name in EXTENDED_FUNCTIONS:
+                path = '/keypress/%s' % EXTENDED_FUNCTIONS[name]
+                for _ in range(args[0]):
+                    self._post(path)
             elif name == 'literal':
                 for char in args[0]:
                     path = '/keypress/%s_%s' % (COMMANDS[name], quote_plus(char))
