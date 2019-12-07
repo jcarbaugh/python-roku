@@ -60,7 +60,7 @@ COMMANDS = {
     'poweroff': 'PowerOff',
 }
 
-EXTENDED_FUNCTIONS = {
+ITERABLE_FUNCTIONS = {
     # Making the standard volume calls more iterable.
     # Accepts an integer and calls the associated function by that arg times.
     #     roku.volume_down_by(3)
@@ -169,7 +169,7 @@ class Roku(object):
 
     def __getattr__(self, name):
 
-        if name not in COMMANDS and name not in SENSORS and name not in EXTENDED_FUNCTIONS:
+        if name not in COMMANDS and name not in SENSORS and name not in ITERABLE_FUNCTIONS:
             raise AttributeError('%s is not a valid method' % name)
 
         def command(*args, **kwargs):
@@ -177,8 +177,8 @@ class Roku(object):
                 keys = ['%s.%s' % (name, axis) for axis in ('x', 'y', 'z')]
                 params = dict(zip(keys, args))
                 self.input(params)
-            elif name in EXTENDED_FUNCTIONS:
-                path = '/keypress/%s' % EXTENDED_FUNCTIONS[name]
+            elif name in ITERABLE_FUNCTIONS:
+                path = '/keypress/%s' % ITERABLE_FUNCTIONS[name]
                 for _ in range(args[0]):
                     self._post(path)
             elif name == 'literal':

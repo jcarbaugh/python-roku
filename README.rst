@@ -44,7 +44,7 @@ To see a full list of available commands, use the *commands* property.
 If you are following along on your home network and are connected to your Roku, you should see it doing stuff. *Cool!*
 
 
-Extended Functions
+Iterable Functions
 ~~~~~~~~~~~~~~~~~~
 
 The library formerly had just two methods of volume control, and mute.
