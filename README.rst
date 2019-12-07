@@ -44,6 +44,19 @@ To see a full list of available commands, use the *commands* property.
 If you are following along on your home network and are connected to your Roku, you should see it doing stuff. *Cool!*
 
 
+Extended Functions
+~~~~~~~~~~~~~~~~~~
+
+The library formerly had just two methods of volume control, and mute.
+:: 
+    >>> roku.volume_down()
+    >>> roku.volume_up()
+    
+There are now two additional methods which iterate over the native volume methods when provided with an int parameter.
+::
+    >>> roku.volume_down_by(3)
+    >>> roku.volume_up_by(5)
+
 Apps
 ~~~~
 
