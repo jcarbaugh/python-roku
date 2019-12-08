@@ -37,6 +37,7 @@ def serialize_apps(apps):
 
     return content
 
+
 def deserialize_channels(doc, roku=None):
 
     from .core import Channel

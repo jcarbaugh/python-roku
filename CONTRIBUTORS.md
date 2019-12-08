@@ -10,3 +10,6 @@ These very nice people have helped create python-roku.
 * [segadude](https://github.com/segadude) and [wilsoc5](https://github.com/wilsoc5) - volume key support
 * [bschlenk](https://github.com/bschlenk) - Roku TV commands
 * [keatontaylor](https://github.com/keatontaylor) - Enhanced Serach
+* [frdfsnlght](https://github.com/frdfsnlght) - fix lxml import
+* [bwarden](https://github.com/bwarden) - PowerOn command
+* [springstan](https://github.com/springstan) - fix for successful status codes

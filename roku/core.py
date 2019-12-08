@@ -5,7 +5,7 @@ try:
     from lxml import etree as ET
 except ImportError:
     import xml.etree.ElementTree as ET
-    
+
 from six.moves.urllib_parse import urlparse
 
 from . import discovery
@@ -125,13 +125,15 @@ class Channel(object):
 
     def launch(self):
         if self.roku:
-            tv_app = Application(id= 'tvinput.dtv', version=None, name='TV', roku=self.roku)
+            tv_app = Application(
+                id='tvinput.dtv', version=None, name='TV', roku=self.roku)
             self.roku.launch(tv_app, {'ch': self.number})
 
 
 class DeviceInfo(object):
 
-    def __init__(self, model_name, model_num, software_version, serial_num, user_device_name, roku_type):
+    def __init__(self, model_name, model_num, software_version,
+                 serial_num, user_device_name, roku_type):
         self.model_name = model_name
         self.model_num = model_num
         self.software_version = software_version
@@ -176,7 +178,8 @@ class Roku(object):
                 self.input(params)
             elif name == 'literal':
                 for char in args[0]:
-                    path = '/keypress/%s_%s' % (COMMANDS[name], quote_plus(char))
+                    path = '/keypress/%s_%s' % (
+                        COMMANDS[name], quote_plus(char))
                     self._post(path)
             elif name == 'search':
                 path = '/search/browse'
@@ -265,10 +268,11 @@ class Roku(object):
         root = ET.fromstring(resp)
 
         roku_type = "Box"
-        if root.find('is-tv') != None and root.find('is-tv').text == "true":
+        if root.find('is-tv') is not None and \
+                root.find('is-tv').text == "true":
             roku_type = "TV"
-        elif root.find('is-stick') != None and \
-             root.find('is-stick').text == "true":
+        elif root.find('is-stick') is not None and \
+                root.find('is-stick').text == "true":
             roku_type = "Stick"
         dinfo = DeviceInfo(
             model_name=root.find('model-name').text,

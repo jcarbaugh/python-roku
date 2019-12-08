@@ -10,8 +10,7 @@ def keypress(key):
 
 @app.route('/launch/<code>')
 def launch(code):
-    app_id = request.args.get('contentID', None)
-    pass
+    request.args.get('contentID', None)
 
 
 @app.route('/query/apps')

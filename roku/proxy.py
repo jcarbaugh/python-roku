@@ -1,5 +1,3 @@
-from roku.core import Roku
-
 
 class Proxy(object):
 

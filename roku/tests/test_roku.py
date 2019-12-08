@@ -122,7 +122,8 @@ def test_literal(roku):
     roku.literal(text)
 
     for i, call in enumerate(roku.calls()):
-        assert call == ('POST', '/keypress/Lit_%s' % quote_plus(text[i]), (), {})
+        assert call == (
+            'POST', '/keypress/Lit_%s' % quote_plus(text[i]), (), {})
 
 
 def test_literal_fancy(roku):
@@ -131,7 +132,8 @@ def test_literal_fancy(roku):
     roku.literal(text)
 
     for i, call in enumerate(roku.calls()):
-        assert call == ('POST', '/keypress/Lit_%s' % quote_plus(text[i]), (), {})
+        assert call == (
+            'POST', '/keypress/Lit_%s' % quote_plus(text[i]), (), {})
 
 
 def test_store(apps):
