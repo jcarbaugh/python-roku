@@ -10,6 +10,5 @@ pytest-mock = "*"
 tox = "*"
 
 [packages]
-lxml = "<5"
 requests = "<3"
 six = "*"

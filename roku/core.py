@@ -1,11 +1,7 @@
 import logging
+import xml.etree.ElementTree as ET
+
 import requests
-
-try:
-    from lxml import etree as ET
-except ImportError:
-    import xml.etree.ElementTree as ET
-
 from six.moves.urllib_parse import urlparse
 
 from . import discovery
