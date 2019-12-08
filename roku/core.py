@@ -224,7 +224,7 @@ class Roku(object):
         func = getattr(self._conn, method.lower())
         resp = func(url, timeout=self.timeout, *args, **kwargs)
 
-        if resp.status_code not in [200, 204]:
+        if resp.status_code < 200 or resp.status_code > 299:
             raise RokuException(resp.content)
 
         return resp.content
