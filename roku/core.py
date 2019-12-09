@@ -8,7 +8,7 @@ from . import discovery
 from .util import deserialize_apps, deserialize_channels
 
 
-__version__ = '3.0.0'
+__version__ = '4.0.0'
 
 
 COMMANDS = {
