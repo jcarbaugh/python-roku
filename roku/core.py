@@ -60,6 +60,8 @@ COMMANDS = {
     'poweroff': 'PowerOff',
 }
 
+ITERABLE_COMMANDS = ('volume_up', 'volume_down', 'channel_up', 'channel_down', 'backspace', 'up', 'down', 'left', 'right', 'back')
+
 SENSORS = ('acceleration', 'magnetic', 'orientation', 'rotation')
 
 TOUCH_OPS = ('up', 'down', 'press', 'move', 'cancel')
@@ -161,7 +163,7 @@ class Roku(object):
 
     def __getattr__(self, name):
 
-        if name not in COMMANDS and name not in SENSORS and name not in ITERABLE_FUNCTIONS:
+        if name not in COMMANDS and name not in SENSORS:
             raise AttributeError('%s is not a valid method' % name)
 
         def command(*args, **kwargs):
@@ -169,7 +171,7 @@ class Roku(object):
                 keys = ['%s.%s' % (name, axis) for axis in ('x', 'y', 'z')]
                 params = dict(zip(keys, args))
                 self.input(params)
-            elif name in ('volume_up', 'volume_down', 'channel_up', 'channel_down', 'backspace', 'up', 'down', 'left', 'right', 'back'):
+            elif name in ITERABLE_COMMANDS:
                 iterations = args[0] if len(args[0]) > 0 else 1
                 path = '/keypress/%s' % COMMANDS[name]
                 for _ in range(iterations):
