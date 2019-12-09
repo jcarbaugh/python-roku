@@ -1,16 +1,11 @@
 import logging
 import xml.etree.ElementTree as ET
+from urllib.parse import quote_plus, urlparse
 
 import requests
-from six.moves.urllib_parse import urlparse
 
 from . import discovery
 from .util import deserialize_apps, deserialize_channels
-
-try:
-    from urllib.parse import quote_plus
-except ImportError:
-    from urllib import quote_plus
 
 
 __version__ = '3.0.0'

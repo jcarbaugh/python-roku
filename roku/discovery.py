@@ -4,14 +4,14 @@ https://gist.github.com/dankrause/6000248
 http://github.com/dankrause
 """
 import socket
-import six
-from six.moves import http_client
+from http.client import HTTPResponse
+from io import BytesIO
 
 ST_DIAL = 'urn:dial-multiscreen-org:service:dial:1'
 ST_ECP = 'roku:ecp'
 
 
-class _FakeSocket(six.BytesIO):
+class _FakeSocket(BytesIO):
     def makefile(self, *args, **kw):
         return self
 
@@ -49,14 +49,11 @@ def discover(timeout=2, retries=1, st=ST_ECP):
         sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
 
         m = message.format(st=st)
-        if six.PY2:
-            sock.sendto(m, group)
-        elif six.PY3:
-            sock.sendto(m.encode(), group)
+        sock.sendto(m.encode(), group)
 
         while 1:
             try:
-                rhttp = http_client.HTTPResponse(_FakeSocket(sock.recv(1024)))
+                rhttp = HTTPResponse(_FakeSocket(sock.recv(1024)))
                 rhttp.begin()
                 if rhttp.status == 200:
                     rssdp = SSDPResponse(rhttp)

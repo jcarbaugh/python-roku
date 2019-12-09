@@ -7,8 +7,6 @@ verify_ssl = true
 flake8 = "*"
 pytest = "*"
 pytest-mock = "*"
-tox = "*"
 
 [packages]
 requests = "<3"
-six = "*"

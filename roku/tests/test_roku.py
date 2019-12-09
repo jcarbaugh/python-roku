@@ -1,12 +1,8 @@
 # -*- coding: utf-8 -*-
 import os
+from urllib.parse import quote_plus
 
 import pytest
-
-try:
-    from urllib.parse import quote_plus
-except ImportError:
-    from urllib import quote_plus
 
 from roku.core import Application, Roku, COMMANDS
 from roku.util import serialize_apps

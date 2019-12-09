@@ -1,7 +1,7 @@
 import xml.etree.ElementTree as ET
 from contextlib import closing
 
-from six import BytesIO
+from io import BytesIO
 
 
 def deserialize_apps(doc, roku=None):
