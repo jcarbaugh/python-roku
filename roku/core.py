@@ -60,14 +60,6 @@ COMMANDS = {
     'poweroff': 'PowerOff',
 }
 
-ITERABLE_FUNCTIONS = {
-    # Making the standard volume calls more iterable.
-    # Accepts an integer and calls the associated function by that arg times.
-    #     roku.volume_down_by(3)
-    'volume_down_by': 'VolumeDown',
-    'volume_up_by': 'VolumeUp',
-}
-
 SENSORS = ('acceleration', 'magnetic', 'orientation', 'rotation')
 
 TOUCH_OPS = ('up', 'down', 'press', 'move', 'cancel')
@@ -177,9 +169,10 @@ class Roku(object):
                 keys = ['%s.%s' % (name, axis) for axis in ('x', 'y', 'z')]
                 params = dict(zip(keys, args))
                 self.input(params)
-            elif name in ITERABLE_FUNCTIONS:
-                path = '/keypress/%s' % ITERABLE_FUNCTIONS[name]
-                for _ in range(args[0]):
+            elif name in ('volume_up', 'volume_down', 'channel_up', 'channel_down', 'backspace', 'up', 'down', 'left', 'right', 'back'):
+                iterations = args[0] if len(args[0]) > 0 else 1
+                path = '/keypress/%s' % COMMANDS[name]
+                for _ in range(iterations):
                     self._post(path)
             elif name == 'literal':
                 for char in args[0]:
