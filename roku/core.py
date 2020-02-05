@@ -1,7 +1,7 @@
 import logging
 import xml.etree.ElementTree as ET
 from urllib.parse import quote_plus, urlparse
-
+import socket
 import requests
 
 from . import discovery
@@ -149,7 +149,7 @@ class Roku(object):
         return rokus
 
     def __init__(self, host, port=8060, timeout=10):
-        self.host = host
+        self.host = socket.gethostbyname(host)
         self.port = port
         self._conn = None
         self.timeout = timeout
