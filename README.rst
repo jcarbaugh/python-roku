@@ -22,7 +22,7 @@ Usage
 The Basics
 ~~~~~~~~~~
 
-To start, import the Roku object and create it with the IP of your Roku.
+To start, import the Roku object and create it with the IP address or hostname of your Roku.
 ::
 
     >>> from roku import Roku
