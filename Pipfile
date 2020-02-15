@@ -7,7 +7,6 @@ verify_ssl = true
 flake8 = "*"
 pytest = "*"
 pytest-mock = "*"
-black = "==19.10b0"
 
 [packages]
 requests = "<3"
