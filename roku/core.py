@@ -56,6 +56,8 @@ COMMANDS = {
     'poweron': 'PowerOn',
 }
 
+ITERABLE_COMMANDS = ('volume_up', 'volume_down', 'channel_up', 'channel_down', 'backspace', 'up', 'down', 'left', 'right', 'back')
+
 SENSORS = ('acceleration', 'magnetic', 'orientation', 'rotation')
 
 TOUCH_OPS = ('up', 'down', 'press', 'move', 'cancel')
@@ -167,6 +169,11 @@ class Roku(object):
                 keys = ['%s.%s' % (name, axis) for axis in ('x', 'y', 'z')]
                 params = dict(zip(keys, args))
                 self.input(params)
+            elif name in ITERABLE_COMMANDS:
+                iterations = args[0] if len(args[0]) > 0 else 1
+                path = '/keypress/%s' % COMMANDS[name]
+                for _ in range(iterations):
+                    self._post(path)
             elif name == 'literal':
                 for char in args[0]:
                     path = '/keypress/%s_%s' % (

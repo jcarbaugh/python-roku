@@ -44,6 +44,17 @@ To see a full list of available commands, use the *commands* property.
 If you are following along on your home network and are connected to your Roku, you should see it doing stuff. *Cool!*
 
 
+Iterable Functions
+~~~~~~~~~~~~~~~~~~
+
+If there is a command that could require multiple button presses with regular physical remote usage, it can be sent multiple times in one call.
+
+The `volume_up`, `volume_down`, `channel_up`, `channel_down`, `backspace`, `up`, `down`, `left`, `right`, and `back` commands can all accept an integer parameter to run that command that amount of times.
+::
+    >>> roku.volume_down(3)
+    >>> roku.volume_up(5)
+    >>> roku.down(4)
+
 Apps
 ~~~~
 
