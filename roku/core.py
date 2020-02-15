@@ -8,60 +8,55 @@ from . import discovery
 from .util import deserialize_apps, deserialize_channels
 
 
-__version__ = '4.0.0'
+__version__ = "4.1.0"
 
 
 COMMANDS = {
     # Standard Keys
-    'home': 'Home',
-    'reverse': 'Rev',
-    'forward': 'Fwd',
-    'play': 'Play',
-    'select': 'Select',
-    'left': 'Left',
-    'right': 'Right',
-    'down': 'Down',
-    'up': 'Up',
-    'back': 'Back',
-    'replay': 'InstantReplay',
-    'info': 'Info',
-    'backspace': 'Backspace',
-    'search': 'Search',
-    'enter': 'Enter',
-    'literal': 'Lit',
-
+    "home": "Home",
+    "reverse": "Rev",
+    "forward": "Fwd",
+    "play": "Play",
+    "select": "Select",
+    "left": "Left",
+    "right": "Right",
+    "down": "Down",
+    "up": "Up",
+    "back": "Back",
+    "replay": "InstantReplay",
+    "info": "Info",
+    "backspace": "Backspace",
+    "search": "Search",
+    "enter": "Enter",
+    "literal": "Lit",
     # For devices that support "Find Remote"
-    'find_remote': 'FindRemote',
-
+    "find_remote": "FindRemote",
     # For Roku TV
-    'volume_down': 'VolumeDown',
-    'volume_up': 'VolumeUp',
-    'volume_mute': 'VolumeMute',
-
+    "volume_down": "VolumeDown",
+    "volume_up": "VolumeUp",
+    "volume_mute": "VolumeMute",
     # For Roku TV while on TV tuner channel
-    'channel_up': 'ChannelUp',
-    'channel_down': 'ChannelDown',
-
+    "channel_up": "ChannelUp",
+    "channel_down": "ChannelDown",
     # For Roku TV current input
-    'input_tuner': 'InputTuner',
-    'input_hdmi1': 'InputHDMI1',
-    'input_hdmi2': 'InputHDMI2',
-    'input_hdmi3': 'InputHDMI3',
-    'input_hdmi4': 'InputHDMI4',
-    'input_av1': 'InputAV1',
-
+    "input_tuner": "InputTuner",
+    "input_hdmi1": "InputHDMI1",
+    "input_hdmi2": "InputHDMI2",
+    "input_hdmi3": "InputHDMI3",
+    "input_hdmi4": "InputHDMI4",
+    "input_av1": "InputAV1",
     # For devices that support being turned on/off
-    'power': 'Power',
-    'poweroff': 'PowerOff',
-    'poweron': 'PowerOn',
+    "power": "Power",
+    "poweroff": "PowerOff",
+    "poweron": "PowerOn",
 }
 
-SENSORS = ('acceleration', 'magnetic', 'orientation', 'rotation')
+SENSORS = ("acceleration", "magnetic", "orientation", "rotation")
 
-TOUCH_OPS = ('up', 'down', 'press', 'move', 'cancel')
+TOUCH_OPS = ("up", "down", "press", "move", "cancel")
 
 
-roku_logger = logging.getLogger('roku')
+roku_logger = logging.getLogger("roku")
 
 
 class RokuException(Exception):
@@ -69,7 +64,6 @@ class RokuException(Exception):
 
 
 class Application(object):
-
     def __init__(self, id, version, name, roku=None, is_screensaver=False):
         self.id = str(id)
         self.version = version
@@ -78,12 +72,13 @@ class Application(object):
         self.roku = roku
 
     def __eq__(self, other):
-        return isinstance(other, Application) and \
-            (self.id, self.version) == (other.id, other.version)
+        return isinstance(other, Application) and (self.id, self.version) == (
+            other.id,
+            other.version,
+        )
 
     def __repr__(self):
-        return ('<Application: [%s] %s v%s>' %
-                (self.id, self.name, self.version))
+        return "<Application: [%s] %s v%s>" % (self.id, self.name, self.version)
 
     @property
     def icon(self):
@@ -100,31 +95,38 @@ class Application(object):
 
 
 class Channel(object):
-
     def __init__(self, number, name, roku=None):
         self.number = str(number)
         self.name = name
         self.roku = roku
 
     def __eq__(self, other):
-        return isinstance(other, Channel) and \
-            (self.number, self.name) == (other.number, other.name)
+        return isinstance(other, Channel) and (self.number, self.name) == (
+            other.number,
+            other.name,
+        )
 
     def __repr__(self):
-        return ('<Channel: [%s] %s>' %
-                (self.number, self.name))
+        return "<Channel: [%s] %s>" % (self.number, self.name)
 
     def launch(self):
         if self.roku:
             tv_app = Application(
-                id='tvinput.dtv', version=None, name='TV', roku=self.roku)
-            self.roku.launch(tv_app, {'ch': self.number})
+                id="tvinput.dtv", version=None, name="TV", roku=self.roku
+            )
+            self.roku.launch(tv_app, {"ch": self.number})
 
 
 class DeviceInfo(object):
-
-    def __init__(self, model_name, model_num, software_version,
-                 serial_num, user_device_name, roku_type):
+    def __init__(
+        self,
+        model_name,
+        model_num,
+        software_version,
+        serial_num,
+        user_device_name,
+        roku_type,
+    ):
         self.model_name = model_name
         self.model_num = model_num
         self.software_version = software_version
@@ -133,13 +135,16 @@ class DeviceInfo(object):
         self.roku_type = roku_type
 
     def __repr__(self):
-        return ('<DeviceInfo: %s-%s, SW v%s, Ser# %s (%s)>' %
-                (self.model_name, self.model_num,
-                 self.software_version, self.serial_num, self.roku_type))
+        return "<DeviceInfo: %s-%s, SW v%s, Ser# %s (%s)>" % (
+            self.model_name,
+            self.model_num,
+            self.software_version,
+            self.serial_num,
+            self.roku_type,
+        )
 
 
 class Roku(object):
-
     @classmethod
     def discover(self, *args, **kwargs):
         rokus = []
@@ -160,24 +165,23 @@ class Roku(object):
     def __getattr__(self, name):
 
         if name not in COMMANDS and name not in SENSORS:
-            raise AttributeError('%s is not a valid method' % name)
+            raise AttributeError("%s is not a valid method" % name)
 
         def command(*args, **kwargs):
             if name in SENSORS:
-                keys = ['%s.%s' % (name, axis) for axis in ('x', 'y', 'z')]
+                keys = ["%s.%s" % (name, axis) for axis in ("x", "y", "z")]
                 params = dict(zip(keys, args))
                 self.input(params)
-            elif name == 'literal':
+            elif name == "literal":
                 for char in args[0]:
-                    path = '/keypress/%s_%s' % (
-                        COMMANDS[name], quote_plus(char))
+                    path = "/keypress/%s_%s" % (COMMANDS[name], quote_plus(char))
                     self._post(path)
-            elif name == 'search':
-                path = '/search/browse'
-                params = {k.replace('_', '-'): v for k, v in kwargs.items()}
+            elif name == "search":
+                path = "/search/browse"
+                params = {k.replace("_", "-"): v for k, v in kwargs.items()}
                 self._post(path, params=params)
             else:
-                path = '/keypress/%s' % COMMANDS[name]
+                path = "/keypress/%s" % COMMANDS[name]
                 self._post(path)
 
         return command
@@ -204,10 +208,10 @@ class Roku(object):
             self._conn = requests.Session()
 
     def _get(self, path, *args, **kwargs):
-        return self._call('GET', path, *args, **kwargs)
+        return self._call("GET", path, *args, **kwargs)
 
     def _post(self, path, *args, **kwargs):
-        return self._call('POST', path, *args, **kwargs)
+        return self._call("POST", path, *args, **kwargs)
 
     def _call(self, method, path, *args, **kwargs):
 
@@ -215,10 +219,10 @@ class Roku(object):
 
         roku_logger.debug(path)
 
-        url = 'http://%s:%s%s' % (self.host, self.port, path)
+        url = "http://%s:%s%s" % (self.host, self.port, path)
 
-        if method not in ('GET', 'POST'):
-            raise ValueError('only GET and POST HTTP methods are supported')
+        if method not in ("GET", "POST"):
+            raise ValueError("only GET and POST HTTP methods are supported")
 
         func = getattr(self._conn, method.lower())
         resp = func(url, timeout=self.timeout, *args, **kwargs)
@@ -230,7 +234,7 @@ class Roku(object):
 
     @property
     def apps(self):
-        resp = self._get('/query/apps')
+        resp = self._get("/query/apps")
         applications = deserialize_apps(resp)
         for a in applications:
             a.roku = self
@@ -238,7 +242,7 @@ class Roku(object):
 
     @property
     def active_app(self):
-        resp = self._get('/query/active-app')
+        resp = self._get("/query/active-app")
         active_app = deserialize_apps(resp)
         if len(active_app):
             return active_app[0]
@@ -247,7 +251,7 @@ class Roku(object):
 
     @property
     def tv_channels(self):
-        resp = self._get('/query/tv-channels')
+        resp = self._get("/query/tv-channels")
         channels = deserialize_channels(resp)
         for c in channels:
             c.roku = self
@@ -255,27 +259,21 @@ class Roku(object):
 
     @property
     def device_info(self):
-        resp = self._get('/query/device-info')
+        resp = self._get("/query/device-info")
         root = ET.fromstring(resp)
 
         roku_type = "Box"
-        if root.find('is-tv') is not None and \
-                root.find('is-tv').text == "true":
+        if root.find("is-tv") is not None and root.find("is-tv").text == "true":
             roku_type = "TV"
-        elif root.find('is-stick') is not None and \
-                root.find('is-stick').text == "true":
+        elif root.find("is-stick") is not None and root.find("is-stick").text == "true":
             roku_type = "Stick"
         dinfo = DeviceInfo(
-            model_name=root.find('model-name').text,
-            model_num=root.find('model-number').text,
-            software_version=''.join([
-                root.find('software-version').text,
-                '.',
-                root.find('software-build').text
-            ]),
-            serial_num=root.find('serial-number').text,
-            user_device_name=root.find('user-device-name').text,
-            roku_type=roku_type
+            model_name=root.find("model-name").text,
+            model_num=root.find("model-number").text,
+            software_version=f"{root.find('software-version').text}.{root.find('software-build').text}",
+            serial_num=root.find("serial-number").text,
+            user_device_name=root.find("user-device-name").text,
+            roku_type=roku_type,
         )
         return dinfo
 
@@ -285,60 +283,60 @@ class Roku(object):
 
     @property
     def power_state(self):
-        resp = self._get('/query/device-info')
+        resp = self._get("/query/device-info")
         root = ET.fromstring(resp)
-        if root.find('power-mode').text:
-            if root.find('power-mode').text == 'PowerOn':
+        if root.find("power-mode").text:
+            if root.find("power-mode").text == "PowerOn":
                 return "On"
             else:
                 return "Off"
         return "Unknown"
 
     def icon(self, app):
-        return self._get('/query/icon/%s' % app.id)
+        return self._get("/query/icon/%s" % app.id)
 
     def launch(self, app, params={}):
         if app.roku and app.roku != self:
-            raise RokuException('this app belongs to another Roku')
-        params['contentID'] = app.id
-        return self._post('/launch/%s' % app.id, params=params)
+            raise RokuException("this app belongs to another Roku")
+        params["contentID"] = app.id
+        return self._post("/launch/%s" % app.id, params=params)
 
     def store(self, app):
-        return self._post('/launch/11', params={'contentID': app.id})
+        return self._post("/launch/11", params={"contentID": app.id})
 
     def input(self, params):
-        return self._post('/input', params=params)
+        return self._post("/input", params=params)
 
-    def touch(self, x, y, op='down'):
+    def touch(self, x, y, op="down"):
 
         if op not in TOUCH_OPS:
-            raise RokuException('%s is not a valid touch operation' % op)
+            raise RokuException("%s is not a valid touch operation" % op)
 
         params = {
-            'touch.0.x': x,
-            'touch.0.y': y,
-            'touch.0.op': op,
+            "touch.0.x": x,
+            "touch.0.y": y,
+            "touch.0.op": op,
         }
 
         self.input(params)
 
     @property
     def current_app(self):
-        resp = self._get('/query/active-app')
+        resp = self._get("/query/active-app")
         root = ET.fromstring(resp)
         is_screensaver = True
 
-        app_node = root.find('screensaver')
+        app_node = root.find("screensaver")
         if app_node is None:
-            app_node = root.find('app')
+            app_node = root.find("app")
             is_screensaver = False
 
         if app_node is None:
             return None
 
         return Application(
-            id=app_node.get('id'),
-            version=app_node.get('version'),
+            id=app_node.get("id"),
+            version=app_node.get("version"),
             name=app_node.text,
             is_screensaver=is_screensaver,
             roku=self,

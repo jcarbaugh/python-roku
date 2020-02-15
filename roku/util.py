@@ -12,18 +12,19 @@ def deserialize_apps(doc, roku=None):
     root = ET.fromstring(doc)
     for elem in root:
         app = Application(
-            id=elem.get('id'), version=elem.get('version'), name=elem.text)
+            id=elem.get("id"), version=elem.get("version"), name=elem.text
+        )
         applications.append(app)
     return applications
 
 
 def serialize_apps(apps):
 
-    root = ET.Element('apps')
+    root = ET.Element("apps")
 
     for app in apps:
-        attrs = {'id': app.id, 'version': app.version}
-        elem = ET.SubElement(root, 'app', attrs)
+        attrs = {"id": app.id, "version": app.version}
+        elem = ET.SubElement(root, "app", attrs)
         elem.text = app.name
 
     with closing(BytesIO()) as bffr:
@@ -43,9 +44,7 @@ def deserialize_channels(doc, roku=None):
 
     for elem in root:
         channel = Channel(
-            number=elem.find('number').text,
-            name=elem.find('name').text,
-            roku=roku,
+            number=elem.find("number").text, name=elem.find("name").text, roku=roku,
         )
         channels.append(channel)
     return channels

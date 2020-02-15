@@ -7,8 +7,8 @@ import socket
 from http.client import HTTPResponse
 from io import BytesIO
 
-ST_DIAL = 'urn:dial-multiscreen-org:service:dial:1'
-ST_ECP = 'roku:ecp'
+ST_DIAL = "urn:dial-multiscreen-org:service:dial:1"
+ST_ECP = "roku:ecp"
 
 
 class _FakeSocket(BytesIO):
@@ -17,34 +17,38 @@ class _FakeSocket(BytesIO):
 
 
 class SSDPResponse(object):
-
     def __init__(self, response):
-        self.location = response.getheader('location')
-        self.usn = response.getheader('usn')
-        self.st = response.getheader('st')
-        self.cache = response.getheader('cache-control').split('=')[1]
+        self.location = response.getheader("location")
+        self.usn = response.getheader("usn")
+        self.st = response.getheader("st")
+        self.cache = response.getheader("cache-control").split("=")[1]
 
     def __repr__(self):
-        return '<SSDPResponse({location}, {st}, {usn})'.format(**self.__dict__)
+        return "<SSDPResponse({location}, {st}, {usn})".format(**self.__dict__)
 
 
 def discover(timeout=2, retries=1, st=ST_ECP):
 
-    group = ('239.255.255.250', 1900)
+    group = ("239.255.255.250", 1900)
 
-    message = '\r\n'.join([
-        'M-SEARCH * HTTP/1.1',
-        'HOST: {0}:{1}'.format(*group),
-        'MAN: "ssdp:discover"',
-        'ST: {st}', 'MX: 3', '', ''])
+    message = "\r\n".join(
+        [
+            "M-SEARCH * HTTP/1.1",
+            "HOST: {0}:{1}".format(*group),
+            'MAN: "ssdp:discover"',
+            "ST: {st}",
+            "MX: 3",
+            "",
+            "",
+        ]
+    )
 
     socket.setdefaulttimeout(timeout)
 
     responses = {}
 
     for _ in range(retries):
-        sock = socket.socket(
-            socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
 
