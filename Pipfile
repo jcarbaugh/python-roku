@@ -4,10 +4,12 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+black = "==19.10b0"
 flake8 = "*"
-pytest = "*"
-pytest-mock = "<2"
 importlib-metadata = "*"
+pytest = "*"
+pytest-mock = "*"
+twine = "*"
 
 [packages]
 requests = "<3"
