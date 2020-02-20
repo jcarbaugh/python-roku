@@ -154,3 +154,10 @@ def test_launch(apps):
 
         params = {'params': {'contentID': app.id}}
         assert call == ('POST', '/launch/%s' % app.id, (), params)
+
+
+def test_icon_url(mocker, apps):
+
+    for app in apps:
+        roku = app.roku
+        assert roku.icon_url(app.id) === 'http://0.0.0.0:8060/query/icon/%s' % app.id
