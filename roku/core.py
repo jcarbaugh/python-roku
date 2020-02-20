@@ -220,7 +220,7 @@ class Roku(object):
         roku_logger.debug(path)
 
         url = "http://%s:%s%s" % (self.host, self.port, path)
-
+        
         if method not in ("GET", "POST"):
             raise ValueError("only GET and POST HTTP methods are supported")
 
@@ -294,6 +294,9 @@ class Roku(object):
 
     def icon(self, app):
         return self._get("/query/icon/%s" % app.id)
+
+    def icon_url(self, app):
+        return "http://%s:%s/query/icon/%s" % (self.host, self.port, app.id)
 
     def launch(self, app, params={}):
         if app.roku and app.roku != self:
