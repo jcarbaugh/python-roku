@@ -159,6 +159,5 @@ def test_launch(apps):
 def test_icon_url(apps):
 
     for app in apps:
-        roku = app.roku
-        assert roku.icon_url(app) === 'http://0.0.0.0:8060/query/icon/%s' % app.id
- .      assert app.icon_url() === 'http://0.0.0.0:8060/query/icon/%s' % app.id
+        assert app.roku.icon_url(app) == 'http://0.0.0.0:8060/query/icon/%s' % app.id
+ .      assert app.icon_url == 'http://0.0.0.0:8060/query/icon/%s' % app.id
