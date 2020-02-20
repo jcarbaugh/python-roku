@@ -156,7 +156,7 @@ def test_launch(apps):
         assert call == ('POST', '/launch/%s' % app.id, (), params)
 
 
-def test_icon_url(mocker, apps):
+def test_icon_url(apps):
 
     for app in apps:
         roku = app.roku
