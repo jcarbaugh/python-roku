@@ -220,7 +220,7 @@ class Roku(object):
         roku_logger.debug(path)
 
         url = "http://%s:%s%s" % (self.host, self.port, path)
-        
+
         if method not in ("GET", "POST"):
             raise ValueError("only GET and POST HTTP methods are supported")
 
