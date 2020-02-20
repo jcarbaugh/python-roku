@@ -86,7 +86,7 @@ You can also get the app's icon.
     ...     f.write(hulu.icon)
 
     >>> print hulu.icon_url
-    http://0.0.0.0:8060/query/icon/{app.id}
+    http://0.0.0.0:8060/query/icon/2285
 
 You can get the current running app.
 ::
