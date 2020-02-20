@@ -85,6 +85,10 @@ You can also get the app's icon.
     >>> with open('hulu.png', 'w') as f:
     ...     f.write(hulu.icon)
 
+    >>> app = roku.apps[0]
+    >>> print roku.icon_url(app.id)
+    http://0.0.0.0:8060/query/icon/{app.id}
+
 You can get the current running app.
 ::
 
