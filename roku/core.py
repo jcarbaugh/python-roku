@@ -85,6 +85,11 @@ class Application(object):
         if self.roku:
             return self.roku.icon(self)
 
+    @property
+    def icon_url(self):
+        if self.roku:
+            return self.roku.icon_url(self)
+
     def launch(self):
         if self.roku:
             self.roku.launch(self)
