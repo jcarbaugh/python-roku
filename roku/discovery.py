@@ -36,7 +36,7 @@ def discover(timeout=2, retries=1, st=ST_ECP):
             "M-SEARCH * HTTP/1.1",
             "HOST: {0}:{1}".format(*group),
             'MAN: "ssdp:discover"',
-            "ST: {st}",
+            "ST: {0}".format(st),
             "MX: 3",
             "",
             "",
