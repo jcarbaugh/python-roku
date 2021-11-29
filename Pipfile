@@ -4,7 +4,7 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-black = "==19.10b0"
+black = "==21.11b1"
 flake8 = "*"
 importlib-metadata = "*"
 pytest = "*"
