@@ -193,6 +193,9 @@ class Roku(object):
             app = self._app_for_id(key)
         return app
 
+    def __dir__(self):
+        return sorted(dir(type(self)) + self.commands)
+
     def _app_for_name(self, name):
         for app in self.apps:
             if app.name == name:
