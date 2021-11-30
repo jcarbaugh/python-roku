@@ -99,7 +99,7 @@ def test_commands(roku):
         getattr(roku, cmd)()
         call = roku.last_call()
 
-        assert call == ('POST', '/keypress/%s' % COMMANDS[cmd], (), {})
+        assert call == ('POST', f'/keypress/{COMMANDS[cmd]}', (), {})
 
 
 def test_search(roku):
@@ -119,7 +119,7 @@ def test_literal(roku):
 
     for i, call in enumerate(roku.calls()):
         assert call == (
-            'POST', '/keypress/Lit_%s' % quote_plus(text[i]), (), {})
+            'POST', f'/keypress/Lit_{quote_plus(text[i])}', (), {})
 
 
 def test_literal_fancy(roku):
@@ -129,7 +129,7 @@ def test_literal_fancy(roku):
 
     for i, call in enumerate(roku.calls()):
         assert call == (
-            'POST', '/keypress/Lit_%s' % quote_plus(text[i]), (), {})
+            'POST', f'/keypress/Lit_{quote_plus(text[i])}', (), {})
 
 
 def test_store(apps):
@@ -153,4 +153,4 @@ def test_launch(apps):
         call = roku.last_call()
 
         params = {'params': {'contentID': app.id}}
-        assert call == ('POST', '/launch/%s' % app.id, (), params)
+        assert call == ('POST', f'/launch/{app.id}', (), params)
