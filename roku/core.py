@@ -194,7 +194,7 @@ class Roku(object):
         return app
 
     def __dir__(self):
-        return sorted(dir(type(self)) + self.commands)
+        return sorted(dir(type(self)) + list(COMMANDS.keys()) + list(SENSORS))
 
     def _app_for_name(self, name):
         for app in self.apps:
