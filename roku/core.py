@@ -107,7 +107,7 @@ class Channel(object):
         )
 
     def __repr__(self):
-        return "<Channel: [{self.number}] {self.name}>"
+        return f"<Channel: [{self.number}] {self.name}>"
 
     def launch(self):
         if self.roku:
