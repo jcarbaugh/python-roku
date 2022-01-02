@@ -35,6 +35,12 @@ The Roku object has a method for each of the buttons on the remote.
     >>> roku.right()
     >>> roku.select()
 
+To support keyup and keydown events simply pass "keyup" or "keydown" when you call the command.
+::
+
+    >>> roku.right("keydown")
+    >>> roku.right("keyup")
+
 To see a full list of available commands, use the *commands* property.
 ::
 

@@ -14,3 +14,4 @@ These very nice people have helped create python-roku.
 * [bwarden](https://github.com/bwarden) - PowerOn command
 * [springstan](https://github.com/springstan) - fix for successful status codes
 * [zombielinux](https://github.com/zombielinux) - added support for hostnames
+* [kyesh](https://github.com/kyesh) - added support for keyup and keydown

@@ -181,7 +181,10 @@ class Roku(object):
                 params = {k.replace("_", "-"): v for k, v in kwargs.items()}
                 self._post(path, params=params)
             else:
-                path = "/keypress/%s" % COMMANDS[name]
+                if(len(args)>0 and (args[0] == "keydown" or args[0] == "keyup")):
+                    path = "/%s/%s"%(args[0],COMMANDS[name])
+                else:
+                    path = "/keypress/%s" % COMMANDS[name]
                 self._post(path)
 
         return command
