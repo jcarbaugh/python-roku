@@ -78,7 +78,7 @@ class Application(object):
         )
 
     def __repr__(self):
-        return "<Application: [%s] %s v%s>" % (self.id, self.name, self.version)
+        return f"<Application: [{self.id}] {self.name} v{self.version}>"
 
     @property
     def icon(self):
@@ -107,7 +107,7 @@ class Channel(object):
         )
 
     def __repr__(self):
-        return "<Channel: [%s] %s>" % (self.number, self.name)
+        return f"<Channel: [{self.number}] {self.name}>"
 
     def launch(self):
         if self.roku:
@@ -135,12 +135,10 @@ class DeviceInfo(object):
         self.roku_type = roku_type
 
     def __repr__(self):
-        return "<DeviceInfo: %s-%s, SW v%s, Ser# %s (%s)>" % (
-            self.model_name,
-            self.model_num,
-            self.software_version,
-            self.serial_num,
-            self.roku_type,
+        return (
+            f"<DeviceInfo: {self.model_name}-{self.model_num}, "
+            f"SW v{self.software_version}, "
+            f"Ser# {self.serial_num} ({self.roku_type})>"
         )
 
 
@@ -176,20 +174,20 @@ class Roku(object):
         self.timeout = timeout
 
     def __repr__(self):
-        return "<Roku: %s:%s>" % (self.host, self.port)
+        return f"<Roku: {self.host}:{self.port}>"
 
     def __getattr__(self, name):
         if name not in COMMANDS and name not in SENSORS:
-            raise AttributeError("%s is not a valid method" % name)
+            raise AttributeError(f"{name} is not a valid method")
 
         def command(*args, **kwargs):
             if name in SENSORS:
-                keys = ["%s.%s" % (name, axis) for axis in ("x", "y", "z")]
+                keys = [f"{name}.{axis}" for axis in ("x", "y", "z")]
                 params = dict(zip(keys, args))
                 self.input(params)
             elif name == "literal":
                 for char in args[0]:
-                    path = "/keypress/%s_%s" % (COMMANDS[name], quote_plus(char))
+                    path = f"/keypress/{COMMANDS[name]}_{quote_plus(char)}"
                     self._post(path)
             elif name == "search":
                 path = "/search/browse"
@@ -197,9 +195,9 @@ class Roku(object):
                 self._post(path, params=params)
             else:
                 if len(args) > 0 and (args[0] == "keydown" or args[0] == "keyup"):
-                    path = "/%s/%s" % (args[0], COMMANDS[name])
+                    path = f"/{args[0]}/{COMMANDS[name]}"
                 else:
-                    path = "/keypress/%s" % COMMANDS[name]
+                    path = f"/keypress/{COMMANDS[name]}"
                 self._post(path)
 
         return command
@@ -236,7 +234,7 @@ class Roku(object):
 
         roku_logger.debug(path)
 
-        url = "http://%s:%s%s" % (self.host, self.port, path)
+        url = f"http://{self.host}:{self.port}{path}"
 
         if method not in ("GET", "POST"):
             raise ValueError("only GET and POST HTTP methods are supported")
@@ -323,13 +321,13 @@ class Roku(object):
         return "Unknown"
 
     def icon(self, app):
-        return self._get("/query/icon/%s" % app.id)
+        return self._get(f"/query/icon/{app.id}")
 
     def launch(self, app, params={}):
         if app.roku and app.roku != self:
             raise RokuException("this app belongs to another Roku")
         params["contentID"] = app.id
-        return self._post("/launch/%s" % app.id, params=params)
+        return self._post(f"/launch/{app.id}", params=params)
 
     def store(self, app):
         return self._post("/launch/11", params={"contentID": app.id})
@@ -339,7 +337,7 @@ class Roku(object):
 
     def touch(self, x, y, op="down"):
         if op not in TOUCH_OPS:
-            raise RokuException("%s is not a valid touch operation" % op)
+            raise RokuException(f"{op} is not a valid touch operation")
 
         params = {
             "touch.0.x": x,
