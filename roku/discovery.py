@@ -28,7 +28,6 @@ class SSDPResponse(object):
 
 
 def discover(timeout=2, retries=1, st=ST_ECP):
-
     group = ("239.255.255.250", 1900)
 
     message = "\r\n".join(

@@ -1,2 +1,1 @@
-from roku.core import (  # noqa
-    Roku, Application, Channel, RokuException, __version__)
+from roku.core import Roku, Application, Channel, RokuException, __version__  # noqa

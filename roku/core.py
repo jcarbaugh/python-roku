@@ -216,10 +216,10 @@ class Roku(object):
 
     def __dir__(self):
         return sorted(
-            dir(type(self)) + 
-            list(self.__dict__.keys()) + 
-            list(COMMANDS.keys()) + 
-            list(SENSORS)
+            dir(type(self))
+            + list(self.__dict__.keys())
+            + list(COMMANDS.keys())
+            + list(SENSORS)
         )
 
     def _app_for_name(self, name):

@@ -5,7 +5,6 @@ from io import BytesIO
 
 
 def deserialize_apps(doc, roku=None):
-
     from .core import Application
 
     applications = []
@@ -19,7 +18,6 @@ def deserialize_apps(doc, roku=None):
 
 
 def serialize_apps(apps):
-
     root = ET.Element("apps")
 
     for app in apps:
@@ -36,7 +34,6 @@ def serialize_apps(apps):
 
 
 def deserialize_channels(doc, roku=None):
-
     from .core import Channel
 
     channels = []
@@ -44,7 +41,9 @@ def deserialize_channels(doc, roku=None):
 
     for elem in root:
         channel = Channel(
-            number=elem.find("number").text, name=elem.find("name").text, roku=roku,
+            number=elem.find("number").text,
+            name=elem.find("name").text,
+            roku=roku,
         )
         channels.append(channel)
     return channels

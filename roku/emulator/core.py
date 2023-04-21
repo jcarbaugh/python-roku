@@ -1,15 +1,14 @@
 from roku import Application
 
 DEFAULT_APPS = [
-    Application(1, '1.0', 'Hulu Plus'),
-    Application(2, '2.0', 'TWiT'),
-    Application(3, '3.0', 'Whisky Media'),
-    Application(4, '4.0', 'Netflix'),
+    Application(1, "1.0", "Hulu Plus"),
+    Application(2, "2.0", "TWiT"),
+    Application(3, "3.0", "Whisky Media"),
+    Application(4, "4.0", "Netflix"),
 ]
 
 
 class Emulator(object):
-
     def __init__(self, apps=None):
         self._apps = apps or DEFAULT_APPS
 
