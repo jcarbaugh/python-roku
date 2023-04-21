@@ -85,6 +85,11 @@ class Application(object):
         if self.roku:
             return self.roku.icon(self)
 
+    @property
+    def icon_url(self):
+        if self.roku:
+            return self.roku.icon_url(self)
+
     def launch(self):
         if self.roku:
             self.roku.launch(self)
@@ -330,6 +335,9 @@ class Roku(object):
 
     def icon(self, app):
         return self._get(f"/query/icon/{app.id}")
+
+    def icon_url(self, app):
+        return "http://%s:%s/query/icon/%s" % (self.host, self.port, app.id)
 
     def launch(self, app, params={}):
         if app.roku and app.roku != self:

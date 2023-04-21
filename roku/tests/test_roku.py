@@ -174,3 +174,10 @@ def test_launch(apps):
 
         params = {'params': {'contentID': app.id}}
         assert call == ('POST', f'/launch/{app.id}', (), params)
+
+
+def test_icon_url(apps):
+
+    for app in apps:
+        assert app.roku.icon_url(app) == f"http://0.0.0.0:8060/query/icon/{app.id}"
+        assert app.icon_url == f"http://0.0.0.0:8060/query/icon/{app.id}"
