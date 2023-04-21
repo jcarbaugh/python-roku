@@ -5,7 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 black = "*"
-flake8 = "*"
+flake8 = "<6"
 importlib-metadata = "*"
 pytest = "*"
 pytest-mock = "*"
