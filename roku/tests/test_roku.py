@@ -88,6 +88,26 @@ def test_device_info(mocker, roku):
     assert d.roku_type == 'Stick'
 
 
+def test_media_player(mocker, roku):
+
+    xml_path = os.path.join(TESTS_PATH, 'responses', 'media-player.xml')
+    with open(xml_path) as infile:
+        content = infile.read()
+
+    faux_apps = (Application(33, '1.2.3', 'Faux YouTube'),)
+
+    mocked_get = mocker.patch.object(Roku, '_get')
+    mocked_get.return_value = content.encode('utf-8')
+    mocker.patch.object(Roku, 'apps', new=faux_apps)
+
+    m = roku.media_player
+
+    assert m.state == 'pause'
+    assert m.app.name == 'Faux YouTube'
+    assert m.position == 11187
+    assert m.duration == 1858000
+
+
 def test_commands(roku):
 
     for cmd in roku.commands:
