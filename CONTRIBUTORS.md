@@ -15,3 +15,4 @@ These very nice people have helped create python-roku.
 * [springstan](https://github.com/springstan) - fix for successful status codes
 * [zombielinux](https://github.com/zombielinux) - added support for hostnames
 * [kk7ds](https://github.com/kk7ds) - support for media-player query
+* [kyesh](https://github.com/kyesh) - added support for keyup and keydown
