@@ -144,6 +144,24 @@ class DeviceInfo(object):
         )
 
 
+class MediaPlayer(object):
+    def __init__(
+        self,
+        state,
+        app,
+        position,
+        duration
+    ):
+        self.state = state
+        self.app = app
+        self.position = position
+        self.duration = duration
+
+    def __repr__(self):
+        return "<MediaPlayer: %s in %s at %s/%s ms>" % (
+            self.state, self.app.name, self.position, self.duration)
+
+
 class Roku(object):
     @classmethod
     def discover(self, *args, **kwargs):
@@ -279,6 +297,19 @@ class Roku(object):
             roku_type=roku_type,
         )
         return dinfo
+
+    @property
+    def media_player(self):
+        resp = self._get("/query/media-player")
+        root = ET.fromstring(resp)
+
+        mp = MediaPlayer(
+            state=root.get("state"),
+            app=self[int(root.find("plugin").get("id"))],
+            position=int(root.find("position").text.split(" ", 1)[0]),
+            duration=int(root.find("duration").text.split(" ", 1)[0]),
+        )
+        return mp
 
     @property
     def commands(self):
