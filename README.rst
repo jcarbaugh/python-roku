@@ -3,9 +3,6 @@ python-roku
 
 Screw remotes. Control your `Roku <http://www.roku.com>`_ via Python.
 
-.. image:: https://travis-ci.org/jcarbaugh/python-roku.svg?branch=master
-    :target: https://travis-ci.org/jcarbaugh/python-roku
-
 
 Installation
 ------------
@@ -57,7 +54,7 @@ Apps have *id*, *name*, and *version* properties.
 ::
 
     >>> app = roku.apps[0]
-    >>> print app.id, app.name, app.version
+    >>> print(app.id, app.name, app.version)
     2285 Hulu Plus 2.7.6
 
 You can get an individual app from the Roku object by either its *name* or *id*.
