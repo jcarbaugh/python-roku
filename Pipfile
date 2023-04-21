@@ -14,3 +14,4 @@ twine = "*"
 [packages]
 requests = "<3"
 typing-extensions = "*"
+exceptiongroup = "*"
