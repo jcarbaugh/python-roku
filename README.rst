@@ -3,6 +3,8 @@ python-roku
 
 Screw remotes. Control your `Roku <http://www.roku.com>`_ via Python.
 
+Supports Python 3.7 to 3.11.
+
 
 Installation
 ------------

@@ -7,11 +7,11 @@ f.close()
 
 setup(
     name="roku",
-    version="4.1.0",
+    version="5.0",
     description="Client for the Roku media player",
     long_description=readme,
     author="Jeremy Carbaugh",
-    author_email="jcarbaugh@gmail.com",
+    author_email="jeremy@jcarbaugh.com",
     url="https://github.com/jcarbaugh/python-roku",
     packages=find_packages(),
     install_requires=[
