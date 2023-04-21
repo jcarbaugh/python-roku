@@ -17,3 +17,4 @@ These very nice people have helped create python-roku.
 * [kk7ds](https://github.com/kk7ds) - support for media-player query
 * [kyesh](https://github.com/kyesh) - added support for keyup and keydown
 * [ronnie-llamado](https://github.com/ronnie-llamado) - f-string conversion, better dir
+* [ctalkington](https://github.com/ctalkington) - added icon url
