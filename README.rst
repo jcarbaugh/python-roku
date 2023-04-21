@@ -3,9 +3,6 @@ python-roku
 
 Screw remotes. Control your `Roku <http://www.roku.com>`_ via Python.
 
-.. image:: https://travis-ci.org/jcarbaugh/python-roku.svg?branch=master
-    :target: https://travis-ci.org/jcarbaugh/python-roku
-
 
 Installation
 ------------
@@ -35,6 +32,12 @@ The Roku object has a method for each of the buttons on the remote.
     >>> roku.right()
     >>> roku.select()
 
+To support keyup and keydown events simply pass "keyup" or "keydown" when you call the command.
+::
+
+    >>> roku.right("keydown")
+    >>> roku.right("keyup")
+
 To see a full list of available commands, use the *commands* property.
 ::
 
@@ -57,7 +60,7 @@ Apps have *id*, *name*, and *version* properties.
 ::
 
     >>> app = roku.apps[0]
-    >>> print app.id, app.name, app.version
+    >>> print(app.id, app.name, app.version)
     2285 Hulu Plus 2.7.6
 
 You can get an individual app from the Roku object by either its *name* or *id*.

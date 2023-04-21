@@ -24,7 +24,7 @@ class SSDPResponse(object):
         self.cache = response.getheader("cache-control").split("=")[1]
 
     def __repr__(self):
-        return "<SSDPResponse({location}, {st}, {usn})".format(**self.__dict__)
+        return f"<SSDPResponse({self.location}, {self.st}, {self.usn})"
 
 
 def discover(timeout=2, retries=1, st=ST_ECP):
@@ -34,7 +34,7 @@ def discover(timeout=2, retries=1, st=ST_ECP):
     message = "\r\n".join(
         [
             "M-SEARCH * HTTP/1.1",
-            "HOST: {0}:{1}".format(*group),
+            f"HOST: {group[0]}:{group[1]}",
             'MAN: "ssdp:discover"',
             "ST: {st}",
             "MX: 3",

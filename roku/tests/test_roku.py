@@ -88,6 +88,26 @@ def test_device_info(mocker, roku):
     assert d.roku_type == 'Stick'
 
 
+def test_media_player(mocker, roku):
+
+    xml_path = os.path.join(TESTS_PATH, 'responses', 'media-player.xml')
+    with open(xml_path) as infile:
+        content = infile.read()
+
+    faux_apps = (Application(33, '1.2.3', 'Faux YouTube'),)
+
+    mocked_get = mocker.patch.object(Roku, '_get')
+    mocked_get.return_value = content.encode('utf-8')
+    mocker.patch.object(Roku, 'apps', new=faux_apps)
+
+    m = roku.media_player
+
+    assert m.state == 'pause'
+    assert m.app.name == 'Faux YouTube'
+    assert m.position == 11187
+    assert m.duration == 1858000
+
+
 def test_commands(roku):
 
     for cmd in roku.commands:
@@ -99,7 +119,7 @@ def test_commands(roku):
         getattr(roku, cmd)()
         call = roku.last_call()
 
-        assert call == ('POST', '/keypress/%s' % COMMANDS[cmd], (), {})
+        assert call == ('POST', f'/keypress/{COMMANDS[cmd]}', (), {})
 
 
 def test_search(roku):
@@ -119,7 +139,7 @@ def test_literal(roku):
 
     for i, call in enumerate(roku.calls()):
         assert call == (
-            'POST', '/keypress/Lit_%s' % quote_plus(text[i]), (), {})
+            'POST', f'/keypress/Lit_{quote_plus(text[i])}', (), {})
 
 
 def test_literal_fancy(roku):
@@ -129,7 +149,7 @@ def test_literal_fancy(roku):
 
     for i, call in enumerate(roku.calls()):
         assert call == (
-            'POST', '/keypress/Lit_%s' % quote_plus(text[i]), (), {})
+            'POST', f'/keypress/Lit_{quote_plus(text[i])}', (), {})
 
 
 def test_store(apps):
@@ -153,11 +173,11 @@ def test_launch(apps):
         call = roku.last_call()
 
         params = {'params': {'contentID': app.id}}
-        assert call == ('POST', '/launch/%s' % app.id, (), params)
+        assert call == ('POST', f'/launch/{app.id}', (), params)
 
 
 def test_icon_url(apps):
 
     for app in apps:
-        assert app.roku.icon_url(app) == 'http://0.0.0.0:8060/query/icon/%s' % app.id
- .      assert app.icon_url == 'http://0.0.0.0:8060/query/icon/%s' % app.id
+        assert app.roku.icon_url(app) == f"http://0.0.0.0:8060/query/icon/{app.id}"
+        assert app.icon_url == f"http://0.0.0.0:8060/query/icon/{app.id}"

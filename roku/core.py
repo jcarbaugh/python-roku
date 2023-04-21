@@ -78,7 +78,7 @@ class Application(object):
         )
 
     def __repr__(self):
-        return "<Application: [%s] %s v%s>" % (self.id, self.name, self.version)
+        return f"<Application: [{self.id}] {self.name} v{self.version}>"
 
     @property
     def icon(self):
@@ -112,7 +112,7 @@ class Channel(object):
         )
 
     def __repr__(self):
-        return "<Channel: [%s] %s>" % (self.number, self.name)
+        return f"<Channel: [{self.number}] {self.name}>"
 
     def launch(self):
         if self.roku:
@@ -140,12 +140,26 @@ class DeviceInfo(object):
         self.roku_type = roku_type
 
     def __repr__(self):
-        return "<DeviceInfo: %s-%s, SW v%s, Ser# %s (%s)>" % (
-            self.model_name,
-            self.model_num,
-            self.software_version,
-            self.serial_num,
-            self.roku_type,
+        return (
+            f"<DeviceInfo: {self.model_name}-{self.model_num}, "
+            f"SW v{self.software_version}, "
+            f"Ser# {self.serial_num} ({self.roku_type})>"
+        )
+
+
+class MediaPlayer(object):
+    def __init__(self, state, app, position, duration):
+        self.state = state
+        self.app = app
+        self.position = position
+        self.duration = duration
+
+    def __repr__(self):
+        return "<MediaPlayer: %s in %s at %s/%s ms>" % (
+            self.state,
+            self.app.name,
+            self.position,
+            self.duration,
         )
 
 
@@ -165,28 +179,30 @@ class Roku(object):
         self.timeout = timeout
 
     def __repr__(self):
-        return "<Roku: %s:%s>" % (self.host, self.port)
+        return f"<Roku: {self.host}:{self.port}>"
 
     def __getattr__(self, name):
-
         if name not in COMMANDS and name not in SENSORS:
-            raise AttributeError("%s is not a valid method" % name)
+            raise AttributeError(f"{name} is not a valid method")
 
         def command(*args, **kwargs):
             if name in SENSORS:
-                keys = ["%s.%s" % (name, axis) for axis in ("x", "y", "z")]
+                keys = [f"{name}.{axis}" for axis in ("x", "y", "z")]
                 params = dict(zip(keys, args))
                 self.input(params)
             elif name == "literal":
                 for char in args[0]:
-                    path = "/keypress/%s_%s" % (COMMANDS[name], quote_plus(char))
+                    path = f"/keypress/{COMMANDS[name]}_{quote_plus(char)}"
                     self._post(path)
             elif name == "search":
                 path = "/search/browse"
                 params = {k.replace("_", "-"): v for k, v in kwargs.items()}
                 self._post(path, params=params)
             else:
-                path = "/keypress/%s" % COMMANDS[name]
+                if len(args) > 0 and (args[0] == "keydown" or args[0] == "keyup"):
+                    path = f"/{args[0]}/{COMMANDS[name]}"
+                else:
+                    path = f"/keypress/{COMMANDS[name]}"
                 self._post(path)
 
         return command
@@ -197,6 +213,14 @@ class Roku(object):
         if not app:
             app = self._app_for_id(key)
         return app
+
+    def __dir__(self):
+        return sorted(
+            dir(type(self)) + 
+            list(self.__dict__.keys()) + 
+            list(COMMANDS.keys()) + 
+            list(SENSORS)
+        )
 
     def _app_for_name(self, name):
         for app in self.apps:
@@ -219,12 +243,11 @@ class Roku(object):
         return self._call("POST", path, *args, **kwargs)
 
     def _call(self, method, path, *args, **kwargs):
-
         self._connect()
 
         roku_logger.debug(path)
 
-        url = "http://%s:%s%s" % (self.host, self.port, path)
+        url = f"http://{self.host}:{self.port}{path}"
 
         if method not in ("GET", "POST"):
             raise ValueError("only GET and POST HTTP methods are supported")
@@ -283,6 +306,19 @@ class Roku(object):
         return dinfo
 
     @property
+    def media_player(self):
+        resp = self._get("/query/media-player")
+        root = ET.fromstring(resp)
+
+        mp = MediaPlayer(
+            state=root.get("state"),
+            app=self[int(root.find("plugin").get("id"))],
+            position=int(root.find("position").text.split(" ", 1)[0]),
+            duration=int(root.find("duration").text.split(" ", 1)[0]),
+        )
+        return mp
+
+    @property
     def commands(self):
         return sorted(COMMANDS.keys())
 
@@ -298,7 +334,7 @@ class Roku(object):
         return "Unknown"
 
     def icon(self, app):
-        return self._get("/query/icon/%s" % app.id)
+        return self._get(f"/query/icon/{app.id}")
 
     def icon_url(self, app):
         return "http://%s:%s/query/icon/%s" % (self.host, self.port, app.id)
@@ -307,7 +343,7 @@ class Roku(object):
         if app.roku and app.roku != self:
             raise RokuException("this app belongs to another Roku")
         params["contentID"] = app.id
-        return self._post("/launch/%s" % app.id, params=params)
+        return self._post(f"/launch/{app.id}", params=params)
 
     def store(self, app):
         return self._post("/launch/11", params={"contentID": app.id})
@@ -316,9 +352,8 @@ class Roku(object):
         return self._post("/input", params=params)
 
     def touch(self, x, y, op="down"):
-
         if op not in TOUCH_OPS:
-            raise RokuException("%s is not a valid touch operation" % op)
+            raise RokuException(f"{op} is not a valid touch operation")
 
         params = {
             "touch.0.x": x,
