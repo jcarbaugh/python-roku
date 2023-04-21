@@ -142,6 +142,22 @@ class DeviceInfo(object):
         )
 
 
+class MediaPlayer(object):
+    def __init__(self, state, app, position, duration):
+        self.state = state
+        self.app = app
+        self.position = position
+        self.duration = duration
+
+    def __repr__(self):
+        return "<MediaPlayer: %s in %s at %s/%s ms>" % (
+            self.state,
+            self.app.name,
+            self.position,
+            self.duration,
+        )
+
+
 class Roku(object):
     @classmethod
     def discover(self, *args, **kwargs):
@@ -161,7 +177,6 @@ class Roku(object):
         return f"<Roku: {self.host}:{self.port}>"
 
     def __getattr__(self, name):
-
         if name not in COMMANDS and name not in SENSORS:
             raise AttributeError(f"{name} is not a valid method")
 
@@ -179,7 +194,10 @@ class Roku(object):
                 params = {k.replace("_", "-"): v for k, v in kwargs.items()}
                 self._post(path, params=params)
             else:
-                path = f"/keypress/{COMMANDS[name]}"
+                if len(args) > 0 and (args[0] == "keydown" or args[0] == "keyup"):
+                    path = f"/{args[0]}/{COMMANDS[name]}"
+                else:
+                    path = f"/keypress/{COMMANDS[name]}"
                 self._post(path)
 
         return command
@@ -212,7 +230,6 @@ class Roku(object):
         return self._call("POST", path, *args, **kwargs)
 
     def _call(self, method, path, *args, **kwargs):
-
         self._connect()
 
         roku_logger.debug(path)
@@ -276,6 +293,19 @@ class Roku(object):
         return dinfo
 
     @property
+    def media_player(self):
+        resp = self._get("/query/media-player")
+        root = ET.fromstring(resp)
+
+        mp = MediaPlayer(
+            state=root.get("state"),
+            app=self[int(root.find("plugin").get("id"))],
+            position=int(root.find("position").text.split(" ", 1)[0]),
+            duration=int(root.find("duration").text.split(" ", 1)[0]),
+        )
+        return mp
+
+    @property
     def commands(self):
         return sorted(COMMANDS.keys())
 
@@ -306,7 +336,6 @@ class Roku(object):
         return self._post("/input", params=params)
 
     def touch(self, x, y, op="down"):
-
         if op not in TOUCH_OPS:
             raise RokuException(f"{op} is not a valid touch operation")
 
