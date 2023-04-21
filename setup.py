@@ -14,7 +14,9 @@ setup(
     author_email="jcarbaugh@gmail.com",
     url="https://github.com/jcarbaugh/python-roku",
     packages=find_packages(),
-    install_requires=["requests<3",],
+    install_requires=[
+        "requests<3",
+    ],
     license="BSD License",
     platforms=["any"],
     classifiers=[
@@ -23,8 +25,10 @@ setup(
         "License :: OSI Approved :: BSD License",
         "Natural Language :: English",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
     ],
 )

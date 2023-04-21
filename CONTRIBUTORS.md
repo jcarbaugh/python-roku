@@ -16,4 +16,4 @@ These very nice people have helped create python-roku.
 * [zombielinux](https://github.com/zombielinux) - added support for hostnames
 * [kk7ds](https://github.com/kk7ds) - support for media-player query
 * [kyesh](https://github.com/kyesh) - added support for keyup and keydown
-* [ronnie-llamado](https://github.com/ronnie-llamado) - f-string conversion
+* [ronnie-llamado](https://github.com/ronnie-llamado) - f-string conversion, better dir
