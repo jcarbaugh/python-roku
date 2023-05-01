@@ -224,7 +224,7 @@ class Roku(object):
 
     def _app_for_name(self, name):
         for app in self.apps:
-            if app.name == name:
+            if app.name.find(name) > -1:
                 return app
 
     def _app_for_id(self, app_id):
