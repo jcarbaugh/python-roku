@@ -12,6 +12,6 @@ pytest-mock = "*"
 twine = "*"
 
 [packages]
-requests = "<3"
+requests = "*"
 typing-extensions = "*"
 exceptiongroup = "*"
