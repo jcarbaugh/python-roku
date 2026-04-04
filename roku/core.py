@@ -256,6 +256,9 @@ class Roku(object):
         resp = func(url, timeout=self.timeout, *args, **kwargs)
 
         if resp.status_code < 200 or resp.status_code > 299:
+            if resp.status_code == 401:
+                raise RokuException("Please ensure that mobile / network control "
+                                    "is enabled under Settings > Advanced Settings")
             raise RokuException(resp.content)
 
         return resp.content
