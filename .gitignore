@@ -1,6 +1,11 @@
 *.pyc
+*.egg-info/
+
 .DS_Store
 .env
+
 .cache/
+.mypy_cache/
 .tox/
+.venv/
 dist/
