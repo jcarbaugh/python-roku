@@ -1,6 +1,7 @@
 import pytest
 
 from roku import Application, Roku
+from roku._async import AsyncRoku
 
 
 class Fauxku(Roku):
@@ -19,9 +20,30 @@ class Fauxku(Roku):
         return self._calls[-1]
 
 
+class AsyncFauxku(AsyncRoku):
+    def __init__(self, *args, **kwargs):
+        super(AsyncFauxku, self).__init__(*args, **kwargs)
+        self._calls = []
+
+    async def _call(self, method, path, **kwargs):
+        self._calls.append((method, path, (), kwargs))
+        return b""
+
+    def calls(self):
+        return self._calls
+
+    def last_call(self):
+        return self._calls[-1]
+
+
 @pytest.fixture
 def roku():
     return Fauxku("0.0.0.0")
+
+
+@pytest.fixture
+def async_roku():
+    return AsyncFauxku("0.0.0.0")
 
 
 @pytest.fixture

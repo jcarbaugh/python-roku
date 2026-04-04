@@ -67,3 +67,12 @@ def test_run_script(roku):
     calls = roku.calls()
     assert "keypress/Home" in calls[0][1]
     assert "keypress/Lit_x" in calls[1][1]
+
+
+async def test_async_run_script(async_roku):
+    content = ("home", "literal:x")
+    script = scripting.parse_script(content)
+    await scripting.async_run_script(async_roku, script, sleep=0)
+    calls = async_roku.calls()
+    assert "keypress/Home" in calls[0][1]
+    assert "keypress/Lit_x" in calls[1][1]
