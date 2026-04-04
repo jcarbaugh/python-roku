@@ -2,69 +2,60 @@ import logging
 import xml.etree.ElementTree as ET
 from urllib.parse import quote_plus, urlparse
 import socket
-import requests
 
-from . import discovery
-from .constants import COMMANDS, SENSORS, TOUCH_OPS
-from .models import Application, DeviceInfo, MediaPlayer, RokuException
-from .util import deserialize_apps, deserialize_channels
+import aiohttp
 
-__version__ = "4.1.0"
-
+from ..constants import COMMANDS, SENSORS, TOUCH_OPS
+from ..models import Application, DeviceInfo, MediaPlayer, RokuException
+from ..util import deserialize_apps, deserialize_channels
+from .discovery import discover as async_discover
 
 roku_logger = logging.getLogger("roku")
 
 
-class Roku(object):
-    @classmethod
-    def discover(self, *args, **kwargs):
-        rokus = []
-        for device in discovery.discover(*args, **kwargs):
-            o = urlparse(device.location)
-            rokus.append(Roku(o.hostname, o.port))
-        return rokus
-
+class AsyncRoku(object):
     def __init__(self, host, port=8060, timeout=10):
         self.host = socket.gethostbyname(host)
         self.port = port
-        self._conn = None
+        self._session = None
         self.timeout = timeout
 
+    @classmethod
+    async def discover(cls, *args, **kwargs):
+        rokus = []
+        for device in await async_discover(*args, **kwargs):
+            o = urlparse(device.location)
+            rokus.append(cls(o.hostname, o.port))
+        return rokus
+
     def __repr__(self):
-        return f"<Roku: {self.host}:{self.port}>"
+        return f"<AsyncRoku: {self.host}:{self.port}>"
 
     def __getattr__(self, name):
         if name not in COMMANDS and name not in SENSORS:
             raise AttributeError(f"{name} is not a valid method")
 
-        def command(*args, **kwargs):
+        async def command(*args, **kwargs):
             if name in SENSORS:
                 keys = [f"{name}.{axis}" for axis in ("x", "y", "z")]
                 params = dict(zip(keys, args))
-                self.input(params)
+                await self.input(params)
             elif name == "literal":
                 for char in args[0]:
                     path = f"/keypress/{COMMANDS[name]}_{quote_plus(char)}"
-                    self._post(path)
+                    await self._post(path)
             elif name == "search":
                 path = "/search/browse"
                 params = {k.replace("_", "-"): v for k, v in kwargs.items()}
-                self._post(path, params=params)
+                await self._post(path, params=params)
             else:
                 if len(args) > 0 and (args[0] == "keydown" or args[0] == "keyup"):
                     path = f"/{args[0]}/{COMMANDS[name]}"
                 else:
                     path = f"/keypress/{COMMANDS[name]}"
-                self._post(path)
+                await self._post(path)
 
         return command
-
-    def __getitem__(self, key):
-        key = str(key)
-        app = self._app_for_name(key)
-        if not app:
-            app = self._app_for_id(key)
-        return app
 
     def __dir__(self):
         return sorted(
@@ -74,27 +65,28 @@ class Roku(object):
             + list(SENSORS)
         )
 
-    def _app_for_name(self, name):
-        for app in self.apps:
-            if app.name == name:
-                return app
+    async def __aenter__(self):
+        return self
 
-    def _app_for_id(self, app_id):
-        for app in self.apps:
-            if app.id == app_id:
-                return app
+    async def __aexit__(self, *args):
+        await self.close()
 
     def _connect(self):
-        if self._conn is None:
-            self._conn = requests.Session()
+        if self._session is None:
+            self._session = aiohttp.ClientSession()
 
-    def _get(self, path, *args, **kwargs):
-        return self._call("GET", path, *args, **kwargs)
+    async def close(self):
+        if self._session:
+            await self._session.close()
+            self._session = None
 
-    def _post(self, path, *args, **kwargs):
-        return self._call("POST", path, *args, **kwargs)
+    async def _get(self, path, **kwargs):
+        return await self._call("GET", path, **kwargs)
 
-    def _call(self, method, path, *args, **kwargs):
+    async def _post(self, path, **kwargs):
+        return await self._call("POST", path, **kwargs)
+
+    async def _call(self, method, path, **kwargs):
         self._connect()
 
         roku_logger.debug(path)
@@ -104,42 +96,38 @@ class Roku(object):
         if method not in ("GET", "POST"):
             raise ValueError("only GET and POST HTTP methods are supported")
 
-        func = getattr(self._conn, method.lower())
-        resp = func(url, timeout=self.timeout, *args, **kwargs)
+        timeout = aiohttp.ClientTimeout(total=self.timeout)
+        async with self._session.request(
+            method, url, timeout=timeout, **kwargs
+        ) as resp:
+            if resp.status < 200 or resp.status > 299:
+                raise RokuException(await resp.read())
+            return await resp.read()
 
-        if resp.status_code < 200 or resp.status_code > 299:
-            raise RokuException(resp.content)
-
-        return resp.content
-
-    @property
-    def apps(self):
-        resp = self._get("/query/apps")
+    async def get_apps(self):
+        resp = await self._get("/query/apps")
         applications = deserialize_apps(resp)
         for a in applications:
             a.roku = self
         return applications
 
-    @property
-    def active_app(self):
-        resp = self._get("/query/active-app")
+    async def get_active_app(self):
+        resp = await self._get("/query/active-app")
         active_app = deserialize_apps(resp)
         if len(active_app):
             return active_app[0]
         else:
             return None
 
-    @property
-    def tv_channels(self):
-        resp = self._get("/query/tv-channels")
+    async def get_tv_channels(self):
+        resp = await self._get("/query/tv-channels")
         channels = deserialize_channels(resp)
         for c in channels:
             c.roku = self
         return channels
 
-    @property
-    def device_info(self):
-        resp = self._get("/query/device-info")
+    async def get_device_info(self):
+        resp = await self._get("/query/device-info")
         root = ET.fromstring(resp)
 
         roku_type = "Box"
@@ -157,14 +145,21 @@ class Roku(object):
         )
         return dinfo
 
-    @property
-    def media_player(self):
-        resp = self._get("/query/media-player")
+    async def get_media_player(self):
+        resp = await self._get("/query/media-player")
         root = ET.fromstring(resp)
+
+        plugin = root.find("plugin")
+        app = Application(
+            id=plugin.get("id"),
+            version=plugin.get("version"),
+            name=plugin.text or "",
+            roku=self,
+        )
 
         mp = MediaPlayer(
             state=root.get("state"),
-            app=self[int(root.find("plugin").get("id"))],
+            app=app,
             position=int(root.find("position").text.split(" ", 1)[0]),
             duration=int(root.find("duration").text.split(" ", 1)[0]),
         )
@@ -174,9 +169,8 @@ class Roku(object):
     def commands(self):
         return sorted(COMMANDS.keys())
 
-    @property
-    def power_state(self):
-        resp = self._get("/query/device-info")
+    async def get_power_state(self):
+        resp = await self._get("/query/device-info")
         root = ET.fromstring(resp)
         if root.find("power-mode").text:
             if root.find("power-mode").text == "PowerOn":
@@ -185,25 +179,25 @@ class Roku(object):
                 return "Off"
         return "Unknown"
 
-    def icon(self, app):
-        return self._get(f"/query/icon/{app.id}")
+    async def icon(self, app):
+        return await self._get(f"/query/icon/{app.id}")
 
     def icon_url(self, app):
         return "http://%s:%s/query/icon/%s" % (self.host, self.port, app.id)
 
-    def launch(self, app, params={}):
+    async def launch(self, app, params={}):
         if app.roku and app.roku != self:
             raise RokuException("this app belongs to another Roku")
         params["contentID"] = app.id
-        return self._post(f"/launch/{app.id}", params=params)
+        return await self._post(f"/launch/{app.id}", params=params)
 
-    def store(self, app):
-        return self._post("/launch/11", params={"contentID": app.id})
+    async def store(self, app):
+        return await self._post("/launch/11", params={"contentID": app.id})
 
-    def input(self, params):
-        return self._post("/input", params=params)
+    async def input(self, params):
+        return await self._post("/input", params=params)
 
-    def touch(self, x, y, op="down"):
+    async def touch(self, x, y, op="down"):
         if op not in TOUCH_OPS:
             raise RokuException(f"{op} is not a valid touch operation")
 
@@ -213,11 +207,10 @@ class Roku(object):
             "touch.0.op": op,
         }
 
-        self.input(params)
+        await self.input(params)
 
-    @property
-    def current_app(self):
-        resp = self._get("/query/active-app")
+    async def get_current_app(self):
+        resp = await self._get("/query/active-app")
         root = ET.fromstring(resp)
         is_screensaver = True
 

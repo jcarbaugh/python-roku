@@ -16,6 +16,18 @@ or
 pip install roku
 ```
 
+To use the async client, install with the `async` extra:
+
+```
+uv add "roku[async]"
+```
+
+To use the CLI, install with the `cli` extra:
+
+```
+uv add "roku[cli]"
+```
+
 ## Usage
 
 ### The Basics
@@ -123,6 +135,85 @@ What if I now want to watch *The Informant!*? Again, with the search open and wa
 
 This will iterate over each character, sending it individually to the Roku.
 
+## Async
+
+An async client is available for use with `asyncio`. The `AsyncRoku` class provides the same functionality as the synchronous `Roku` class, but with async methods.
+
+```python
+>>> import asyncio
+>>> from roku._async import AsyncRoku
+```
+
+Create an instance and use it as an async context manager:
+
+```python
+>>> async def main():
+...     async with AsyncRoku('192.168.10.163') as roku:
+...         await roku.home()
+...         await roku.right()
+...         await roku.select()
+...
+>>> asyncio.run(main())
+```
+
+Properties like `apps`, `active_app`, and `device_info` are replaced with async methods:
+
+```python
+>>> async def main():
+...     async with AsyncRoku('192.168.10.163') as roku:
+...         apps = await roku.get_apps()
+...         current = await roku.get_active_app()
+...         info = await roku.get_device_info()
+...
+>>> asyncio.run(main())
+```
+
+Discovery works as an async class method:
+
+```python
+>>> async def main():
+...     rokus = await AsyncRoku.discover()
+...     for roku in rokus:
+...         async with roku:
+...             info = await roku.get_device_info()
+...             print(info.user_device_name)
+...
+>>> asyncio.run(main())
+```
+
+## CLI
+
+A command-line interface is available for device discovery. Install with the `cli` extra and use the `roku` command:
+
+```
+$ roku discover
+192.168.10.163:8060
+```
+
+Use `-i` / `--inspect` to display device details:
+
+```
+$ roku discover -i
+192.168.10.163:8060
+  Name:     Living Room Roku
+  Model:    Roku Ultra (4800X)
+  Type:     Box
+  Software: 11.5.0.4312
+  Serial:   YH009N854321
+```
+
+You can adjust the discovery `--timeout` and `--retries`:
+
+```
+$ roku discover --timeout 10 --retries 3
+```
+
+The CLI also supports the async client with the `--async` flag:
+
+```
+$ roku --async discover
+```
+
 ## Advanced Stuff
 
 ### Discovery
@@ -196,6 +287,4 @@ More information about input, touch, and sensors is available in the [Roku Exter
 ## TODO
 
 - Multitouch support.
-- A Flask proxy server that can listen to requests and forward them to devices on the local network. Control multiple devices at once, eh?
-- A server that mimics the Roku interface so you can make your own Roku-like stuff.
 - A task runner that will take a set of commands and run them with delays that are appropriate for most devices.

@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import os
 import re
@@ -50,3 +51,16 @@ def run_script(roku, script, sleep=0.5):
                 else:
                     func()
                 time.sleep(cmd.sleep or sleep)
+
+
+async def async_run_script(roku, script, sleep=0.5):
+    for cmd in script:
+        logger.debug(cmd)
+        for i in range(cmd.count or 1):
+            func = getattr(roku, cmd.command)
+            if func:
+                if cmd.param:
+                    await func(cmd.param)
+                else:
+                    await func()
+                await asyncio.sleep(cmd.sleep or sleep)
