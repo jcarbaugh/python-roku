@@ -6,10 +6,9 @@ import socket
 import aiohttp
 
 from ..constants import COMMANDS, SENSORS, TOUCH_OPS
-from ..models import Application, Channel, DeviceInfo, MediaPlayer, RokuException
+from ..models import Application, DeviceInfo, MediaPlayer, RokuException
 from ..util import deserialize_apps, deserialize_channels
 from .discovery import discover as async_discover
-
 
 roku_logger = logging.getLogger("roku")
 
@@ -134,10 +133,7 @@ class AsyncRoku(object):
         roku_type = "Box"
         if root.find("is-tv") is not None and root.find("is-tv").text == "true":
             roku_type = "TV"
-        elif (
-            root.find("is-stick") is not None
-            and root.find("is-stick").text == "true"
-        ):
+        elif root.find("is-stick") is not None and root.find("is-stick").text == "true":
             roku_type = "Stick"
         dinfo = DeviceInfo(
             model_name=root.find("model-name").text,

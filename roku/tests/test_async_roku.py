@@ -2,14 +2,11 @@ import os
 from unittest.mock import AsyncMock, patch
 from urllib.parse import quote_plus
 
-import pytest
-
 from roku._async import AsyncRoku
 from roku.constants import COMMANDS
 from roku.discovery import SSDPResponse
 from roku.models import Application
 from roku.util import serialize_apps
-
 
 TESTS_PATH = os.path.abspath(os.path.dirname(__file__))
 
@@ -17,9 +14,7 @@ TESTS_PATH = os.path.abspath(os.path.dirname(__file__))
 async def test_apps(mocker, async_roku):
     faux_apps = (Application("0x", "1.2.3", "Fauxku Channel Store"),)
 
-    mocked_get = mocker.patch.object(
-        AsyncRoku, "_get", new_callable=AsyncMock
-    )
+    mocked_get = mocker.patch.object(AsyncRoku, "_get", new_callable=AsyncMock)
     mocked_get.return_value = serialize_apps(faux_apps)
 
     apps = await async_roku.get_apps()
@@ -35,9 +30,7 @@ async def test_device_info(mocker, async_roku):
     with open(xml_path) as infile:
         content = infile.read()
 
-    mocked_get = mocker.patch.object(
-        AsyncRoku, "_get", new_callable=AsyncMock
-    )
+    mocked_get = mocker.patch.object(AsyncRoku, "_get", new_callable=AsyncMock)
     mocked_get.return_value = content.encode("utf-8")
 
     d = await async_roku.get_device_info()
@@ -54,9 +47,7 @@ async def test_media_player(mocker, async_roku):
     with open(xml_path) as infile:
         content = infile.read()
 
-    mocked_get = mocker.patch.object(
-        AsyncRoku, "_get", new_callable=AsyncMock
-    )
+    mocked_get = mocker.patch.object(AsyncRoku, "_get", new_callable=AsyncMock)
     mocked_get.return_value = content.encode("utf-8")
 
     m = await async_roku.get_media_player()

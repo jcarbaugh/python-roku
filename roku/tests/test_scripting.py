@@ -2,7 +2,6 @@ import pytest
 
 from roku import scripting
 
-
 SCRIPT_PATH = "roku/tests/scripts/testscript.txt"
 
 

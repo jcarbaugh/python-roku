@@ -6,7 +6,6 @@ import pytest
 from roku.core import Application, Roku, COMMANDS
 from roku.util import serialize_apps
 
-
 TESTS_PATH = os.path.abspath(os.path.dirname(__file__))
 
 

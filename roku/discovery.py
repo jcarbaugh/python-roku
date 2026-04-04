@@ -3,6 +3,7 @@ Code adapted from Dan Krause.
 https://gist.github.com/dankrause/6000248
 http://github.com/dankrause
 """
+
 import socket
 from http.client import HTTPResponse
 from io import BytesIO

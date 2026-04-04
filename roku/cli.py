@@ -4,7 +4,9 @@ import click
 
 
 @click.group()
-@click.option("--async", "use_async", is_flag=True, default=False, help="Use async client")
+@click.option(
+    "--async", "use_async", is_flag=True, default=False, help="Use async client"
+)
 @click.pass_context
 def cli(ctx, use_async):
     ctx.ensure_object(dict)
@@ -14,7 +16,13 @@ def cli(ctx, use_async):
 @cli.command()
 @click.option("--timeout", type=int, default=2, help="Discovery timeout in seconds")
 @click.option("--retries", type=int, default=1, help="Number of retries")
-@click.option("-i", "--inspect", is_flag=True, default=False, help="Fetch and display device details")
+@click.option(
+    "-i",
+    "--inspect",
+    is_flag=True,
+    default=False,
+    help="Fetch and display device details",
+)
 @click.pass_context
 def discover(ctx, timeout, retries, inspect):
     """Discover Roku devices on the network."""

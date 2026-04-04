@@ -55,8 +55,6 @@ class Channel(object):
 
     def launch(self):
         if self.roku:
-            from .core import Roku
-
             tv_app = Application(
                 id="tvinput.dtv", version=None, name="TV", roku=self.roku
             )

@@ -6,9 +6,8 @@ import requests
 
 from . import discovery
 from .constants import COMMANDS, SENSORS, TOUCH_OPS
-from .models import Application, Channel, DeviceInfo, MediaPlayer, RokuException
+from .models import Application, DeviceInfo, MediaPlayer, RokuException
 from .util import deserialize_apps, deserialize_channels
-
 
 __version__ = "4.1.0"
 
