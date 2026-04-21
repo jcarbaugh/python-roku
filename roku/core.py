@@ -162,11 +162,15 @@ class Roku(object):
         resp = self._get("/query/media-player")
         root = ET.fromstring(resp)
 
+        # Duration isn't provided by all apps in all cases, e.g. Netflix / NOW TV
+        duration_element = root.find("duration")
+        duration = int(duration_element.text.split(" ", 1)[0]) if duration_element is not None else None
+
         mp = MediaPlayer(
             state=root.get("state"),
             app=self[int(root.find("plugin").get("id"))],
             position=int(root.find("position").text.split(" ", 1)[0]),
-            duration=int(root.find("duration").text.split(" ", 1)[0]),
+            duration=duration,
         )
         return mp
 

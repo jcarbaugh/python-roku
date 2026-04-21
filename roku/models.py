@@ -94,9 +94,9 @@ class MediaPlayer(object):
         self.duration = duration
 
     def __repr__(self):
-        return "<MediaPlayer: %s in %s at %s/%s ms>" % (
+        progress = f("%s/%s", self.position, self.duration) if self.duration is not None else f("%s", self.position)
+        return "<MediaPlayer: %s in %s at %s ms>" % (
             self.state,
             self.app.name,
-            self.position,
-            self.duration,
+            progress,
         )
