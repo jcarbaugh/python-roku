@@ -157,14 +157,17 @@ class AsyncRoku(object):
             roku=self,
         )
 
-        # Duration isn't provided by all apps in all cases, e.g. Netflix / NOW TV
+        # Duration isn't provided by all apps in all cases, e.g. Netflix / Amazon Prime Video
         duration_element = root.find("duration")
         duration = int(duration_element.text.split(" ", 1)[0]) if duration_element is not None else None
+        # Position can be absent for some states.
+        position_element = root.find("position")
+        position = int(position_element.text.split(" ", 1)[0]) if position_element is not None else None
 
         mp = MediaPlayer(
             state=root.get("state"),
             app=app,
-            position=int(root.find("position").text.split(" ", 1)[0]),
+            position=position,
             duration=duration,
         )
         return mp
